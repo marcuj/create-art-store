@@ -1,0 +1,115 @@
+/*
+  Name: Marcus Jundt
+  Date: 4/24/2024
+  Section: CSE 154 AE
+
+  This is the styles.css page for the videogame deal lookup page. It has a dark theme and styles
+  the game info roughly based on the Steam store page.
+*/
+
+body {
+  background-color: #121212;
+  color: #FFFFFF;
+  font-family: "Roboto", sans-serif;
+}
+
+main {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+header, main {
+  box-shadow: #00000065 0px 0px 80px;
+  background-color: #2121214f;
+}
+
+h1 {
+  text-shadow: #000000 14px 10px 30px;
+  font-size: 46px;
+}
+
+header {
+  text-align: center;
+  padding: 30px;
+}
+
+a {
+  color: #DEDEDE;
+}
+
+nav > a {
+  padding: 15px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+img {
+  width: 200px;
+  max-height: 150px;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+input {
+  background-color: #111111;
+  width: 15%;
+  color: white;
+  border: none;
+}
+
+input:focus {
+  outline: none;
+}
+
+input, button, img, .row {
+  border-radius: 15px;
+}
+
+input, button {
+  font-size: 18px;
+  padding: 10px;
+  height: 36px;
+  margin: 5px;
+}
+
+button {
+  text-align: center;
+  line-height: 50%;
+  border-style: solid;
+}
+
+#btn-view-profile, #btn-view-login, #btn-buy, #btn-sell {
+  color: white;
+  background-color: #ffffff05;
+  border-color: #ffffff09;
+  border-width: 2px;
+}
+
+#btn-view-profile:hover, #btn-view-login:hover, #btn-buy:hover, #btn-sell:hover {
+  background-color: #ffffff09;
+}
+
+#btn-search {
+  color: black;
+  background-color: white;
+  border-color: white;
+  width: 36px;
+}
+
+#btn-search:hover {
+  background-color: #ffffffcc;
+}
+
+.row {
+  margin-bottom: 10px;
+  height: 150px;
+  background: #111111;
+  display: flex;
+  flex-direction: row;
+  min-width: 0;
+}
+
+.hidden {
+  display: none;
+}

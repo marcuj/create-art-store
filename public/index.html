@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+  Name: Marcus Jundt
+  Date: 4/24/2024
+  Section: CSE 154 AE
+
+  This is the index.html file which
+-->
+<html lang="en">
+  <head>
+    <title>Videogame Deal Lookup</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Store Name</h1>
+      <div id="page-btns">
+        <button id="btn-buy">Buy</button>
+        <button id="btn-sell">Sell</button>
+      </div>
+      <div id="user">
+        <button id="btn-login">Login</button>
+        <button id="btn-view-profile" class="hidden">Profile</button>
+      </div>
+    </header>
+    <main>
+      <section id="search-bar">
+        <input id="search-input" type="search" name="item-search" placeholder="Search products...">
+        <button id="btn-search">&gt;</button>
+        <select>
+          <!-- add options based on whats in DB, can do JS on load -->
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+        </select>
+        <label><input type="checkbox" name="grid">Grid</label>
+      </section>
+      <section id="item-display" class="row">
+        <!-- load in items from DB -->
+        <div class="card">
+
+        </div>
+      </section>
+    </main>
+      
+    
+    
+  </body>
+</html>
