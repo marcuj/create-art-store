@@ -17,16 +17,20 @@ main {
   width: 70%;
   margin-left: auto;
   margin-right: auto;
+  padding: 20px;
+  padding-top: 5px;
+  margin-top: 20px;
 }
 
 header, main {
   box-shadow: #00000065 0px 0px 80px;
-  background-color: #2121214f;
+  background-color: #212121c3;
 }
 
-h1 {
+header h1 {
   text-shadow: #000000 14px 10px 30px;
   font-size: 46px;
+  margin-top: 0px;
 }
 
 header {
@@ -45,15 +49,13 @@ nav > a {
 }
 
 img {
-  width: 200px;
-  max-height: 150px;
   object-fit: cover;
   overflow: hidden;
+  background-color: black;
 }
 
 input {
   background-color: #111111;
-  width: 15%;
   color: white;
   border: none;
 }
@@ -62,21 +64,60 @@ input:focus {
   outline: none;
 }
 
-input, button, img, .row {
+input, button, img, .row, .tile, #category-setting, #grid-setting {
   border-radius: 15px;
+}
+
+#category-setting, #grid-setting{
+  height: 16px;
+  padding: 10px;
+  background-color: #111111;
+}
+
+input, button, #display-settings {
+  font-size: 18px;
 }
 
 input, button {
   font-size: 18px;
-  padding: 10px;
-  height: 36px;
   margin: 5px;
+  height: 36px;
+  padding: 10px;
 }
 
 button {
   text-align: center;
   line-height: 50%;
   border-style: solid;
+}
+
+#top-bar {
+  margin-bottom: 0px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#category-setting p {
+  margin-right: 10px;
+}
+
+select {
+  height: 20px;
+}
+
+#grid-setting, #category-setting, #search-bar {
+  margin-right: 30px;
+}
+
+#display-settings {
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+
+#search-bar, #grid-setting, #category-setting, #display-settings, .item-subinfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 #btn-view-profile, #btn-view-login, #btn-buy, #btn-sell {
@@ -94,20 +135,55 @@ button {
   color: black;
   background-color: white;
   border-color: white;
-  width: 36px;
+  width: 30px;
+  height: 30px;
 }
 
 #btn-search:hover {
   background-color: #ffffffcc;
 }
 
-.row {
+#item-display {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
   margin-bottom: 10px;
-  height: 150px;
   background: #111111;
   display: flex;
+}
+
+.row {
   flex-direction: row;
+  height: 150px; 
   min-width: 0;
+}
+
+.tile {
+  flex-direction: column;
+  height: 280px;
+  width: 250.4px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.tile img {
+  width: 100%;
+  height: 236px;
+}
+
+.item-subinfo {
+  justify-content: space-between;
+}
+
+.card h2, .card p {
+  margin: 5px;
+}
+
+.tile > .item-description {
+  display: none;
 }
 
 .hidden {

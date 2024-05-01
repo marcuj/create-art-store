@@ -8,7 +8,7 @@
 -->
 <html lang="en">
   <head>
-    <title>Videogame Deal Lookup</title>
+    <title>Store Name</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
@@ -16,33 +16,55 @@
   </head>
   <body>
     <header>
+      <section id="top-bar">
+        <div id="user">
+          <button id="btn-login">Login</button>
+          <button id="btn-view-profile" class="hidden">Profile</button>
+        </div>
+      </section>
       <h1>Store Name</h1>
       <div id="page-btns">
         <button id="btn-buy">Buy</button>
         <button id="btn-sell">Sell</button>
       </div>
-      <div id="user">
-        <button id="btn-login">Login</button>
-        <button id="btn-view-profile" class="hidden">Profile</button>
-      </div>
     </header>
     <main>
-      <section id="search-bar">
-        <input id="search-input" type="search" name="item-search" placeholder="Search products...">
-        <button id="btn-search">&gt;</button>
-        <select>
-          <!-- add options based on whats in DB, can do JS on load -->
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-        </select>
-        <label><input type="checkbox" name="grid">Grid</label>
-      </section>
-      <section id="item-display" class="row">
-        <!-- load in items from DB -->
-        <div class="card">
-
+      <section id="display-settings">
+        <div id="search-bar">
+          <input id="search-input" type="search" name="item-search" placeholder="Search products...">
+          <button id="btn-search">&gt;</button>
         </div>
+        
+        <div id="category-setting">
+          <p>Category:</p>
+          <select>
+            <!-- add options based on whats in DB, can do JS on load -->
+            <option value="all" selected>All</option>
+            <option value="egg">Egg</option>
+            <option value="chicken">Chicken</option>
+          </select>
+        </div>
+        
+        <label id="grid-setting">
+          <input type="checkbox" name="grid">
+          <p>Grid</p>
+        </label>
+      </section>
+      <section id="item-display">
+        <!-- load in items from DB -->
+        <div class="card tile">
+          <img class="product-thumb" alt="product thumbnail">
+          <h2>Product name</h2>
+          <section class="item-subinfo">
+            <p class="price-tag">$50.00</p>
+            <p class="category-tag">Egg</p>
+          </section>
+          <p class="item-description"></p>
+        </div>
+        <div class="card tile"></div>
+        <div class="card tile"></div>
+        <div class="card tile"></div>
+        <div class="card tile"></div>
       </section>
     </main>
       
