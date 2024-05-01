@@ -157,7 +157,8 @@ select {
 
 .row {
   flex-direction: row;
-  height: 150px; 
+  height: 236x;
+  width: 100%; 
   min-width: 0;
 }
 
@@ -169,12 +170,16 @@ select {
   margin-right: 5px;
 }
 
-.tile img {
-  width: 100%;
+.card img {
   height: 236px;
+  width: 250.4px;
 }
 
-.item-subinfo {
+.item-info {
+  width: calc(100% - 250.4px);
+}
+
+.tile .item-subinfo {
   justify-content: space-between;
 }
 
@@ -182,7 +187,7 @@ select {
   margin: 5px;
 }
 
-.tile > .item-description {
+.tile .item-description {
   display: none;
 }
 
