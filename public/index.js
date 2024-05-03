@@ -16,7 +16,8 @@
     price: 50,
     category: "Egg",
     categoryID: "egg",
-    description: "This is a description for Product name! What is up"
+    description: "This is a description for Product name! What is up",
+    stock: 3
   };
 
   window.addEventListener("load", init);
@@ -130,6 +131,14 @@
     subInfo.appendChild(category);
 
     id("item-display").appendChild(card);
+    card.addEventListener("click", () => showProductPage(item.productID));
+  }
+
+  // async re-fetch item info
+  function showProductPage(productID) {
+    // don't change item display (just hide it), 
+    // have back button: return to same item display, delete product page innerHTML
+    
   }
 
   function changeGrid() {
