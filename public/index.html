@@ -29,48 +29,81 @@
       </div>
     </header>
     <main>
-      <section id="display-settings">
-        <div id="search-bar">
-          <input id="search-input" type="search" name="item-search" placeholder="Search products...">
-          <button id="btn-search">&gt;</button>
-        </div>
-        
-        <div id="category-setting">
-          <p>Category:</p>
-          <select>
-            <!-- add options based on whats in DB, can do JS on load -->
-            <option value="all" selected>All</option>
-            <option value="egg">Egg</option>
-            <option value="chicken">Chicken</option>
-          </select>
-        </div>
-        
-        <label id="grid-setting">
-          <input type="checkbox" name="grid">
-          <p>Grid</p>
-        </label>
+      <section id="buy-view">
+        <section id="display-settings">
+          <div id="search-bar">
+            <input id="search-input" type="search" name="item-search" placeholder="Search products...">
+            <button id="btn-search">&gt;</button>
+          </div>
+          
+          <div id="category-setting">
+            <p>Category</p>
+            <select>
+              <!-- add options based on whats in DB, can do JS on load -->
+              <option value="all" selected>All</option>
+              <option value="egg">Egg</option>
+              <option value="chicken">Chicken</option>
+            </select>
+          </div>
+          
+          <label id="grid-setting">
+            <input type="checkbox" name="grid">
+            <p>Grid</p>
+          </label>
+        </section>
+        <section id="item-display"></section>
       </section>
-      <section id="item-display">
-        <!-- load in items from DB -->
-        <div class="card row">
-          <img class="product-thumb" alt="product thumbnail">
-          <section class="item-info">
-            <h2>Product name</h2>
-            <section class="item-subinfo">
-              <p class="price-tag">$50.00</p>
-              <p class="category-tag">Egg</p>
-            </section>
-            <p class="item-description">This is a description for Product name! What is up</p>
+
+      <section id="sell-view" class="hidden">
+        <h2>Sell</h2>
+
+        <!-- if logged in hide this -->
+        <p class="hidden">Login required.</p>
+
+        <!-- if not logged in hide below -->
+        <section id="listed-items-display">
+          <h3>Items you currently have for sale</h3>
+          <p>No items.</p>
+          <button id="btn-create-listing">List new item</button>
+          <section id="create-listing" class="hidden">
+            <h3>Create new listing</h3>
+            <form>
+              <div id="name-input">
+                <p>Product name</p>
+                <input type="text" name="product-name" placeholder="Enter name">
+              </div>
+              <!-- Should have drop-down of available categories from database, JS add options -->
+              <div id="category-input">
+                <p>Category</p>
+                <select name="category">
+                  <option value="none" selected></option>
+                  <option value="egg">Egg</option>
+                  <option value="chicken">Chicken</option>
+                </select>
+              </div>
+              <!-- Make only accept numbers to 2 decimal places -->
+              <div id="price-input">
+                <p>Price (USD)</p>
+                <input type="text" name="product-price" placeholder="Enter price">
+              </div>
+              <div id="description-input">
+                <p>Description</p>
+                <textarea name="product-description" rows="5" cols="33"></textarea>
+              </div>
+              <div id="thumb-input">
+                <input type="file" name="product-thumb" accept="image/*">
+              </div>
+
+              <input id="btn-list" type="submit" name="product-submit">
+            </form>
           </section>
-        </div>
-        <div class="card tile"></div>
-        <div class="card tile"></div>
-        <div class="card tile"></div>
-        <div class="card tile"></div>
+        </section>
+        
       </section>
     </main>
       
-    
-    
+    <footer>
+
+    </footer>
   </body>
 </html>

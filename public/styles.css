@@ -14,7 +14,7 @@ body {
 }
 
 main {
-  width: 70%;
+  max-width: 70%;
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
@@ -64,7 +64,7 @@ input:focus {
   outline: none;
 }
 
-input, button, img, .row, .tile, #category-setting, #grid-setting {
+main, input, button, img, .row, .tile, #category-setting, #grid-setting, #create-listing {
   border-radius: 15px;
 }
 
@@ -151,8 +151,12 @@ select {
 
 .card {
   margin-bottom: 10px;
-  background: #111111;
+  background-color: #111111;
   display: flex;
+}
+
+.card:hover {
+  background-color: #161616;
 }
 
 .row {
@@ -175,8 +179,12 @@ select {
   width: 250.4px;
 }
 
-.item-info {
+.row .item-info {
   width: calc(100% - 250.4px);
+}
+
+.tile .item-info {
+  width: 100%;
 }
 
 .tile .item-subinfo {
@@ -189,6 +197,17 @@ select {
 
 .tile .item-description {
   display: none;
+}
+
+#create-listing {
+  background-color: #121212;
+  padding: 20px;
+}
+
+#create-listing > form > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .hidden {

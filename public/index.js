@@ -9,17 +9,161 @@
 "use strict";
 (function() {
 
+  const MOCK_ITEM = {
+    thumb: "",
+    productName: "Product name",
+    productID: 1,
+    price: 50,
+    category: "Egg",
+    categoryID: "egg",
+    description: "This is a description for Product name! What is up"
+  };
+
   window.addEventListener("load", init);
 
   /**
    * Initializes the
    */
   function init() {
+    fetchAllItems();
+
     id("grid-setting").addEventListener("change", changeGrid);
+    id("category-setting").addEventListener("change", changeCategory);
+
+    id("btn-buy").addEventListener("click", setBuyView);
+    id("btn-sell").addEventListener("click", setSellView);
+
+    id("btn-create-listing").addEventListener("click", displayListingForm); // ?
+
+    // product search API fetch
+    // id("btn-search").addEventListener("click", fetchItemQuery);
+  }
+
+  function setBuyView() {
+      id("buy-view").classList.remove("hidden");
+      id("sell-view").classList.add("hidden");
+      resetItemDisplay();
+      fetchAllItems();
+  }
+
+  function setSellView() {
+    id("buy-view").classList.add("hidden");
+    id("sell-view").classList.remove("hidden");
+    resetItemDisplay();
+  }
+
+  function displayListingForm() {
+    id("create-listing").classList.remove("hidden");
+  }
+
+  function setLoginView() {
+
+  }
+
+  function setProfileView() {
+
+  }
+
+  function hideCurrentView() {
+
+  }
+
+  // make async
+  function fetchAllItems() {
+    for (let i = 0; i < 5; i++) {
+      createCard(MOCK_ITEM);
+    }
+  }
+
+  async function fetchItemQuery() {
+
+  }
+
+  function resetItemDisplay(){
+    id("item-display").innerHTML = "";
+  }
+
+
+  function createCard(item) {
+    let card = gen("div");
+    let thumb = gen("img");
+    let itemInfo = gen("section");
+    let productName = gen("h2");
+    let subInfo = gen("section");
+    let price = gen("p");
+    let category = gen("p");
+    let description = gen("p");
+
+    card.classList.add("card");
+    if (id("grid-setting").firstElementChild.checked) {
+      card.classList.add("tile");
+    } else {
+      card.classList.add("row");
+    }
+    let catSetting = getCatSetting();
+    if (catSetting !== "all" && catSetting !== item.category.toLowerCase()) {
+      card.classList.add("hidden");
+    }
+    thumb.classList.add("product-thumb");
+    itemInfo.classList.add("item-info");
+    subInfo.classList.add("item-subinfo");
+    price.classList.add("price-tag");
+    category.classList.add("category-tag");
+    description.classList.add("item-description");
+
+    thumb.src = item.thumb;
+    thumb.alt = item.productName;
+    productName.textContent = item.productName;
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
+    let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+    let formattedPrice = currencyFormat.format(item.price);
+    price.textContent = formattedPrice;
+    category.textContent = item.category;
+    description.textContent = item.description;
+
+    card.appendChild(thumb);
+    card.appendChild(itemInfo);
+    itemInfo.appendChild(productName);
+    itemInfo.appendChild(subInfo);
+    itemInfo.appendChild(description);
+    subInfo.appendChild(price);
+    subInfo.appendChild(category);
+
+    id("item-display").appendChild(card);
   }
 
   function changeGrid() {
-    
+    let checkbox = this.firstElementChild;
+    let cards = qsa(".card");
+    for (let i = 0; i < cards.length; i++) {
+      let card = cards[i];
+      if (checkbox.checked) {
+        card.classList.remove("row");
+        card.classList.add("tile");
+      } else {
+        card.classList.remove("tile");
+        card.classList.add("row");
+      }
+    }
+  }
+
+  function changeCategory() {
+    let category = getCatSetting();
+    let cards = qsa(".card");
+    for (let i = 0; i < cards.length; i++) {
+      let card = cards[i];
+      let productCategory = qs(card, ".category-tag").textContent.toLowerCase(); // instead get from database when working? or diff way to store category tag?
+      if (productCategory === category || category === "all") {
+        card.classList.remove("hidden");
+      } else {
+        card.classList.add("hidden");
+      }
+    }
+  }
+
+  function getCatSetting() {
+    let categorySelect = qs(id("category-setting"), "select");
+    return categorySelect.options[categorySelect.selectedIndex].value;
   }
 
 
