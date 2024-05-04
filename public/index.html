@@ -16,7 +16,7 @@
   </head>
   <body>
     <header>
-      <section id="top-bar">
+      <section class="top-bar">
         <div id="user">
           <button id="btn-login">Login</button>
           <button id="btn-view-profile" class="hidden">Profile</button>
@@ -101,7 +101,21 @@
       </section>
 
       <section id="product-view" class="hidden">
-        <!-- can have page skeleton, then in JS fill in the skeleton info (unnecessary to JS create entire thing) -->
+        <section class="top-bar">
+          <button id="btn-back">X</button>
+        </section>
+        <section id="product-display">
+          <img id="product-image" src="" alt="">
+          <section class="item-info">
+            <h2></h2>
+            <p class="category-tag"></p>
+            <p class="price-tag"></p>
+            <p class="item-description"></p>
+            <p class="item-stock"></p>
+
+            <button id="btn-item-buy">Buy</button>
+          </section>
+        </section>
       </section>
     </main>
       

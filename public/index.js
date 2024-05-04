@@ -9,16 +9,66 @@
 "use strict";
 (function() {
 
-  const MOCK_ITEM = {
+  const MOCK_ITEMS = [{
+    thumb: "",
+    productName: "Large Egg",
+    productID: 0,
+    price: 4.9,
+    category: "Egg",
+    categoryID: "egg",
+    description: "The Large Egg is a very large egg. This is perfect for large omelette! Buy this now to get a large egg! Please buy this!",
+    stock: 24
+  },
+  {
+    thumb: "",
+    productName: "Long Egg",
+    productID: 1,
+    price: 12,
+    category: "Egg",
+    categoryID: "egg",
+    description: "The Long Egg is a very long egg. This is perfect for long omelette! Buy this now to get a long egg! Please buy this!",
+    stock: 3
+  },
+  {
+    thumb: "",
+    productName: "Big Chicken",
+    productID: 2,
+    price: 49.99,
+    category: "Chicken",
+    categoryID: "chicken",
+    description: "This is a description for Big Chicken! It is a big chicken that can be used for making big chicken salad! Enjoy.",
+    stock: 104
+  },
+  {
+    thumb: "",
+    productName: "Cool Egg",
+    productID: 3,
+    price: 449.5,
+    category: "Egg",
+    categoryID: "egg",
+    description: "This egg is very cool!",
+    stock: 0
+  },
+  {
     thumb: "",
     productName: "Product name",
-    productID: 1,
+    productID: 4,
     price: 50,
     category: "Egg",
     categoryID: "egg",
     description: "This is a description for Product name! What is up",
     stock: 3
-  };
+  },
+  {
+    thumb: "",
+    productName: "Tiny Chicken",
+    productID: 5,
+    price: 75,
+    category: "Chicken",
+    categoryID: "chicken",
+    description: "This is a description for Tiny Chicken! It is a tiny chicken that can be used for making tiny chicken salad! Enjoy.",
+    stock: 5031
+  }];
 
   window.addEventListener("load", init);
 
@@ -36,6 +86,8 @@
 
     id("btn-create-listing").addEventListener("click", displayListingForm); // ?
 
+    id("btn-back").addEventListener("click", backToItemDisplay);
+
     // product search API fetch
     // id("btn-search").addEventListener("click", fetchItemQuery);
   }
@@ -43,18 +95,25 @@
   function setBuyView() {
       id("buy-view").classList.remove("hidden");
       id("sell-view").classList.add("hidden");
+      id("product-view").classList.add("hidden");
       resetItemDisplay();
       fetchAllItems();
   }
 
   function setSellView() {
     id("buy-view").classList.add("hidden");
+    id("product-view").classList.add("hidden");
     id("sell-view").classList.remove("hidden");
     resetItemDisplay();
   }
 
   function displayListingForm() {
     id("create-listing").classList.remove("hidden");
+  }
+
+  function backToItemDisplay() {
+    id("buy-view").classList.remove("hidden");
+    id("product-view").classList.add("hidden");
   }
 
   function setLoginView() {
@@ -69,10 +128,10 @@
 
   }
 
-  // make async
+  // make async when doing API call
   function fetchAllItems() {
-    for (let i = 0; i < 5; i++) {
-      createCard(MOCK_ITEM);
+    for (let i = 0; i < 6; i++) {
+      createCard(MOCK_ITEMS[i]);
     }
   }
 
@@ -115,10 +174,7 @@
     thumb.src = item.thumb;
     thumb.alt = item.productName;
     productName.textContent = item.productName;
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
-    let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
-    let formattedPrice = currencyFormat.format(item.price);
-    price.textContent = formattedPrice;
+    price.textContent = formatCurrency(item.price);
     category.textContent = item.category;
     description.textContent = item.description;
 
@@ -134,11 +190,30 @@
     card.addEventListener("click", () => showProductPage(item.productID));
   }
 
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
+  function formatCurrency(price) {
+    let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+    return currencyFormat.format(price);
+  }
+
   // async re-fetch item info
   function showProductPage(productID) {
-    // don't change item display (just hide it), 
-    // have back button: return to same item display, delete product page innerHTML
-    
+    // temp item - instead fetch from API
+    let item = MOCK_ITEMS[productID];
+    let productEl = id("product-display");
+
+    let imageEl = id("product-image");
+    imageEl.src = item.thumb;
+    imageEl.alt = item.productName;
+
+    qs(productEl, "h2").textContent = item.productName;
+    qs(productEl, ".category-tag").textContent = item.category;
+    qs(productEl, ".price-tag").textContent = formatCurrency(item.price);
+    qs(productEl, ".item-description").textContent = item.description;
+    qs(productEl, ".item-stock").textContent = "In stock: " + item.stock;
+
+    id("buy-view").classList.add("hidden");
+    id("product-view").classList.remove("hidden");
   }
 
   function changeGrid() {
