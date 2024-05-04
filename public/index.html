@@ -32,10 +32,10 @@
       <section id="buy-view">
         <section id="display-settings">
           <div id="search-bar">
-            <input id="search-input" type="search" name="item-search" placeholder="Search products...">
+            <input id="search-inp" type="search" name="item-srch" placeholder="Search products...">
             <button id="btn-search">&gt;</button>
           </div>
-          
+
           <div id="category-setting">
             <p>Category</p>
             <select>
@@ -45,10 +45,10 @@
               <option value="chicken">Chicken</option>
             </select>
           </div>
-          
+
           <label id="grid-setting">
             <input type="checkbox" name="grid">
-            <p>Grid</p>
+            Grid
           </label>
         </section>
         <section id="item-display"></section>
@@ -76,7 +76,7 @@
               <div id="category-input">
                 <p>Category</p>
                 <select name="category">
-                  <option value="none" selected></option>
+                  <option value="none" disabled selected>(Select)</option>
                   <option value="egg">Egg</option>
                   <option value="chicken">Chicken</option>
                 </select>
@@ -97,7 +97,7 @@
               <input id="btn-list" type="submit" name="product-submit">
             </form>
           </section>
-        </section>  
+        </section>
       </section>
 
       <section id="product-view" class="hidden">
@@ -105,7 +105,8 @@
           <button id="btn-back">X</button>
         </section>
         <section id="product-display">
-          <img id="product-image" src="" alt="">
+          <!-- should have default image -->
+          <img id="product-image" src="data:," alt="Product image"> 
           <section class="item-info">
             <h2></h2>
             <p class="category-tag"></p>
@@ -118,7 +119,7 @@
         </section>
       </section>
     </main>
-      
+
     <footer>
 
     </footer>
