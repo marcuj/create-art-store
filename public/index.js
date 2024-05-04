@@ -92,6 +92,7 @@
     // id("btn-search").addEventListener("click", fetchItemQuery);
   }
 
+  /** disables other views and refetches items, acts as "refresh" */
   function setBuyView() {
       id("buy-view").classList.remove("hidden");
       id("sell-view").classList.add("hidden");
@@ -100,6 +101,8 @@
       fetchAllItems();
   }
 
+
+  /** buy view to sell view */
   function setSellView() {
     id("buy-view").classList.add("hidden");
     id("product-view").classList.add("hidden");
@@ -107,43 +110,35 @@
     resetItemDisplay();
   }
 
+  /** shows create new listing form */
   function displayListingForm() {
     id("create-listing").classList.remove("hidden");
   }
 
+  /** from product page to grid */
   function backToItemDisplay() {
     id("buy-view").classList.remove("hidden");
     id("product-view").classList.add("hidden");
   }
 
-  function setLoginView() {
-
-  }
-
-  function setProfileView() {
-
-  }
-
-  function hideCurrentView() {
-
-  }
-
-  // make async when doing API call
+  /** make async when doing API call */
   function fetchAllItems() {
     for (let i = 0; i < 6; i++) {
       createCard(MOCK_ITEMS[i]);
     }
   }
 
+  /** Fetches item from API from query */
   async function fetchItemQuery() {
 
   }
 
+  /** Deletes products on display */
   function resetItemDisplay(){
     id("item-display").innerHTML = "";
   }
 
-
+  /** Creates product card */
   function createCard(item) {
     let card = gen("div");
     let thumb = gen("img");
@@ -190,13 +185,13 @@
     card.addEventListener("click", () => showProductPage(item.productID));
   }
 
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
+  /** https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat */
   function formatCurrency(price) {
     let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
     return currencyFormat.format(price);
   }
 
-  // async re-fetch item info
+  /** async re-fetch item info */
   function showProductPage(productID) {
     // temp item - instead fetch from API
     let item = MOCK_ITEMS[productID];
@@ -216,6 +211,7 @@
     id("product-view").classList.remove("hidden");
   }
 
+  /** swaps grid to row or row to grid */
   function changeGrid() {
     let checkbox = this.firstElementChild;
     let cards = qsa(".card");
@@ -231,6 +227,7 @@
     }
   }
 
+  /** on cataegory change updates items displayed to align with what category is selected */
   function changeCategory() {
     let category = getCatSetting();
     let cards = qsa(".card");
@@ -245,6 +242,7 @@
     }
   }
 
+  /** gets current selected category setting */
   function getCatSetting() {
     let categorySelect = qs(id("category-setting"), "select");
     return categorySelect.options[categorySelect.selectedIndex].value;
