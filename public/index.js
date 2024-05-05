@@ -159,7 +159,36 @@
     let price = gen("p");
     let category = gen("p");
     let description = gen("p");
+    card = applyCurrSettings(card, item);
+    thumb.classList.add("product-thumb");
+    itemInfo.classList.add("item-info");
+    subInfo.classList.add("item-subinfo");
+    price.classList.add("price-tag");
+    category.classList.add("category-tag");
+    description.classList.add("item-description");
+    thumb.src = item.thumb;
+    thumb.alt = item.productName;
+    productName.textContent = item.productName;
+    price.textContent = formatCurrency(item.price);
+    category.textContent = item.category;
+    description.textContent = item.description;
+    card.appendChild(thumb);
+    card.appendChild(itemInfo);
+    itemInfo.appendChild(productName);
+    itemInfo.appendChild(subInfo);
+    itemInfo.appendChild(description);
+    subInfo.appendChild(price);
+    subInfo.appendChild(category);
+    id("item-display").appendChild(card);
+    card.addEventListener("click", () => showProductPage(item.productID));
+  }
 
+  /** 
+   * Applies current settings in item display to the given card
+   * @param {Element} card - product card 
+   * @param {Object} item - item JSON object info
+   */
+  function applyCurrSettings(card, item) {
     card.classList.add("card");
     if (id("grid-setting").firstElementChild.checked) {
       card.classList.add("tile");
@@ -170,30 +199,7 @@
     if (catSetting !== "all" && catSetting !== item.category.toLowerCase()) {
       card.classList.add("hidden");
     }
-    thumb.classList.add("product-thumb");
-    itemInfo.classList.add("item-info");
-    subInfo.classList.add("item-subinfo");
-    price.classList.add("price-tag");
-    category.classList.add("category-tag");
-    description.classList.add("item-description");
-
-    thumb.src = item.thumb;
-    thumb.alt = item.productName;
-    productName.textContent = item.productName;
-    price.textContent = formatCurrency(item.price);
-    category.textContent = item.category;
-    description.textContent = item.description;
-
-    card.appendChild(thumb);
-    card.appendChild(itemInfo);
-    itemInfo.appendChild(productName);
-    itemInfo.appendChild(subInfo);
-    itemInfo.appendChild(description);
-    subInfo.appendChild(price);
-    subInfo.appendChild(category);
-
-    id("item-display").appendChild(card);
-    card.addEventListener("click", () => showProductPage(item.productID));
+    return card;
   }
 
   /**
@@ -271,22 +277,6 @@
     let categorySelect = qs(id("category-setting"), "select");
     return categorySelect.options[categorySelect.selectedIndex].value;
   }
-
-  /*
-  function displayError() {
-    let errorEl = gen("p");
-    errorEl.textContent = "Error, couldn't load product.";
-    errorEl.classList.add("error");
-    id("results").appendChild(errorEl);
-  }
-
-  async function statusCheck(response) {
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return response;
-  }
-  /*
 
   /**
    * Create element from given tag name - took from CSE 154 Lecture 07 slides
