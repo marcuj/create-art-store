@@ -136,6 +136,7 @@
   /**
    * Fetches item from API from query
    * TODO: fetch from API and make async
+   * @returns - nothing :D for now
    */
   function fetchItemQuery() {
     return null;
@@ -207,10 +208,11 @@
     return itemInfo;
   }
 
-  /** 
+  /**
    * Applies current settings in item display to the given card
-   * @param {Element} card - product card 
+   * @param {Element} card - product card
    * @param {Object} item - item JSON object info
+   * @returns {Element} - product card
    */
   function applyCurrSettings(card, item) {
     card.classList.add("card");
@@ -283,6 +285,7 @@
     let cards = qsa(".card");
     for (let i = 0; i < cards.length; i++) {
       let card = cards[i];
+
       // instead get from database when working? or diff way to store category tag?
       let productCategory = qs(card, ".category-tag").textContent.toLowerCase();
       if (productCategory === category || category === "all") {
