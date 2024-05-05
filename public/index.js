@@ -138,7 +138,7 @@
    * TODO: fetch from API and make async
    */
   function fetchItemQuery() {
-    console.log("hi");
+    return null;
   }
 
   /** Deletes products on display */
@@ -152,35 +152,59 @@
    */
   function createCard(item) {
     let card = gen("div");
+    let thumb = genProductImg(item);
+    let itemInfo = genProductInfo(item);
+    card = applyCurrSettings(card, item);
+    card.appendChild(thumb);
+    card.appendChild(itemInfo);
+    id("item-display").appendChild(card);
+    card.addEventListener("click", () => showProductPage(item.productID));
+  }
+
+  /**
+   * Creates product thumbnail element
+   * @param {Object} item - item JSON object info
+   * @returns {Element} - thumbnail element
+   */
+  function genProductImg(item) {
     let thumb = gen("img");
+    thumb.classList.add("product-thumb");
+    thumb.src = item.thumb;
+    thumb.alt = item.productName;
+    return thumb;
+  }
+
+  /**
+   * Creates product info element
+   * @param {Object} item - item JSON object info
+   * @returns {Element} - item info element
+   */
+  function genProductInfo(item) {
     let itemInfo = gen("section");
     let productName = gen("h2");
     let subInfo = gen("section");
     let price = gen("p");
     let category = gen("p");
     let description = gen("p");
-    card = applyCurrSettings(card, item);
-    thumb.classList.add("product-thumb");
+
     itemInfo.classList.add("item-info");
     subInfo.classList.add("item-subinfo");
     price.classList.add("price-tag");
     category.classList.add("category-tag");
     description.classList.add("item-description");
-    thumb.src = item.thumb;
-    thumb.alt = item.productName;
+
     productName.textContent = item.productName;
     price.textContent = formatCurrency(item.price);
     category.textContent = item.category;
     description.textContent = item.description;
-    card.appendChild(thumb);
-    card.appendChild(itemInfo);
+
     itemInfo.appendChild(productName);
     itemInfo.appendChild(subInfo);
     itemInfo.appendChild(description);
     subInfo.appendChild(price);
     subInfo.appendChild(category);
-    id("item-display").appendChild(card);
-    card.addEventListener("click", () => showProductPage(item.productID));
+
+    return itemInfo;
   }
 
   /** 
