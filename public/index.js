@@ -146,7 +146,7 @@
     id("item-display").innerHTML = "";
   }
 
-  /** 
+  /**
    * Creates product card
    * @param {Object} item - item JSON object info
    */
@@ -196,20 +196,20 @@
     card.addEventListener("click", () => showProductPage(item.productID));
   }
 
-  /** 
+  /**
    * Formats given price into USD format
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
    * @param {Number} price - price number to format
    * @returns {String} - formatted price
    */
   function formatCurrency(price) {
-    let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+    let currencyFormat = new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"});
     return currencyFormat.format(price);
   }
 
-  /** 
+  /**
    * Shows product page of clicked on product
-   * TODO: async re-fetch item info 
+   * TODO: async re-fetch item info
    * @param {String} productID - ID of product for database
    */
   function showProductPage(productID) {
@@ -253,7 +253,8 @@
     let cards = qsa(".card");
     for (let i = 0; i < cards.length; i++) {
       let card = cards[i];
-      let productCategory = qs(card, ".category-tag").textContent.toLowerCase(); // instead get from database when working? or diff way to store category tag?
+      // instead get from database when working? or diff way to store category tag?
+      let productCategory = qs(card, ".category-tag").textContent.toLowerCase();
       if (productCategory === category || category === "all") {
         card.classList.remove("hidden");
       } else {
@@ -271,7 +272,7 @@
     return categorySelect.options[categorySelect.selectedIndex].value;
   }
 
-  /** Displays red text error message (called when an error is caught) */
+  /*
   function displayError() {
     let errorEl = gen("p");
     errorEl.textContent = "Error, couldn't load product.";
@@ -279,18 +280,13 @@
     id("results").appendChild(errorEl);
   }
 
-  /**
-   * Checks if the given API reponse's status is OK.
-   * Throws error if not OK and doesn't return the response - took from Lecture 14 slides
-   * @param {Promise} response - API response (if response is ok)
-   */
   async function statusCheck(response) {
     if (!response.ok) {
       throw new Error(await response.text());
     }
     return response;
   }
-  
+  /*
 
   /**
    * Create element from given tag name - took from CSE 154 Lecture 07 slides
