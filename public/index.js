@@ -136,7 +136,7 @@
   /**
    * Fetches item from API from query
    * TODO: fetch from API and make async
-   * @returns - nothing :D for now
+   * @returns {null} - nothing :D for now
    */
   function fetchItemQuery() {
     return null;
