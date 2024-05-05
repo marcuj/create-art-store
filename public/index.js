@@ -16,8 +16,8 @@
     price: 4.9,
     category: "Egg",
     categoryID: "egg",
-    description: "The Large Egg is a very large egg. This is perfect for large omelette!"
-      + "Buy this now to get a large egg! Please buy this!",
+    description: "The Large Egg is a very large egg. This is perfect for large omelette!" +
+      "Buy this now to get a large egg! Please buy this!",
     stock: 24
   },
   {
@@ -27,8 +27,8 @@
     price: 12,
     category: "Egg",
     categoryID: "egg",
-    description: "The Long Egg is a very long egg. This is perfect for long omelette!"
-    + "Buy this now to get a long egg! Please buy this!",
+    description: "The Long Egg is a very long egg. This is perfect for long omelette!" +
+      "Buy this now to get a long egg! Please buy this!",
     stock: 3
   },
   {
@@ -38,8 +38,8 @@
     price: 49.99,
     category: "Chicken",
     categoryID: "chicken",
-    description: "This is a description for Big Chicken! It is a big chicken that can be used for"
-    + "making big chicken salad! Enjoy.",
+    description: "This is a description for Big Chicken! It is a big chicken that can be used for" +
+      "making big chicken salad! Enjoy.",
     stock: 104
   },
   {
@@ -69,8 +69,8 @@
     price: 75,
     category: "Chicken",
     categoryID: "chicken",
-    description: "This is a description for Tiny Chicken! It is a tiny chicken that can be used"
-    + "for making tiny chicken salad! Enjoy.",
+    description: "This is a description for Tiny Chicken! It is a tiny chicken that can be used" +
+      "for making tiny chicken salad! Enjoy.",
     stock: 5031
   }];
 
@@ -123,28 +123,33 @@
     id("product-view").classList.add("hidden");
   }
 
-  /** 
+  /**
    * Fetches items to populate item display
-   * TODO: fetch from API and make async when doing API call */
+   * TODO: fetch from API and make async when doing API call
+   */
   function fetchAllItems() {
     for (let i = 0; i < MOCK_ITEMS.length; i++) {
       createCard(MOCK_ITEMS[i]);
     }
   }
 
-  /** 
-   * Fetches item from API from query 
-   * TODO: fetch from API and make async */
+  /**
+   * Fetches item from API from query
+   * TODO: fetch from API and make async
+   */
   function fetchItemQuery() {
-    console.log("hi")
+    console.log("hi");
   }
 
   /** Deletes products on display */
-  function resetItemDisplay(){
+  function resetItemDisplay() {
     id("item-display").innerHTML = "";
   }
 
-  /** Creates product card */
+  /** 
+   * Creates product card
+   * @param {Object} item - item JSON object info
+   */
   function createCard(item) {
     let card = gen("div");
     let thumb = gen("img");
