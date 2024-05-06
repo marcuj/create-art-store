@@ -109,6 +109,8 @@
   function setLoginView() {
     hideAllViews();
     id("login-view").classList.remove("hidden");
+    id("create-account-form").classList.add("hidden");
+    id("login-form").classList.remove("hidden");
   }
 
   function toggleLoginCreateAcc() {

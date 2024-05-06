@@ -67,7 +67,8 @@
           <button id="btn-create-listing">List new item</button>
           <section id="create-listing" class="hidden">
             <h3>Create new listing</h3>
-            <form>
+            <!-- server post ! -->
+            <form action="" method="post">
               <div id="name-input">
                 <p>Product name</p>
                 <input type="text" name="product-name" placeholder="Enter name">
@@ -122,21 +123,23 @@
       <!-- Where tf do i put this? in new html ? keep here? how do save login ? -->
       <section id="login-view" class="hidden">
         <div id="login-form">
+          <h2>Log in to your account</h2>
           <!-- set up post connected to server, https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form -->
           <form action="" method="post">
             <input type="text" name="username" placeholder="Username">
             <input type="text" name="password" placeholder="Password">
-            <input id="btn-login" type="submit" name="login">
+            <button id="btn-login" type="submit" name="login">Log in</button>
           </form>
-          <button id="to-create-acc-form">Create a new account.</button>
+          <button id="to-create-acc-form">Don't have an account? Create one.</button>
         </div>
         
         <div id="create-account-form" class="hidden">
+          <h2>Create a new account</h2>
           <form action="" method="post">
             <input type="text" name="username" placeholder="Username">
             <input type="text" name="password" placeholder="Password">
             <input type="text" name="confirm-password" placeholder="Confirm password">
-            <input id="btn-create-acc" type="submit" name="create-acc">
+            <button id="btn-create-acc" type="submit" name="create-acc">Create account</button>
           </form>
           <button id="to-login-form">Already have an account? Login.</button>
         </div>
