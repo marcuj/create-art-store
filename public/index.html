@@ -118,6 +118,30 @@
           </section>
         </section>
       </section>
+
+      <!-- Where tf do i put this? in new html ? keep here? how do save login ? -->
+      <section id="login-view" class="hidden">
+        <div id="login-form">
+          <!-- set up post connected to server, https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form -->
+          <form action="" method="post">
+            <input type="text" name="username" placeholder="Username">
+            <input type="text" name="password" placeholder="Password">
+            <input id="btn-login" type="submit" name="login">
+          </form>
+          <button id="to-create-acc-form">Create a new account.</button>
+        </div>
+        
+        <div id="create-account-form" class="hidden">
+          <form action="" method="post">
+            <input type="text" name="username" placeholder="Username">
+            <input type="text" name="password" placeholder="Password">
+            <input type="text" name="confirm-password" placeholder="Confirm password">
+            <input id="btn-create-acc" type="submit" name="create-acc">
+          </form>
+          <button id="to-login-form">Already have an account? Login.</button>
+        </div>
+      </section>
+
     </main>
 
     <footer>

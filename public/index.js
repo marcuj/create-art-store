@@ -88,6 +88,10 @@
     id("btn-buy").addEventListener("click", setBuyView);
     id("btn-sell").addEventListener("click", setSellView);
 
+    id("btn-login").addEventListener("click", setLoginView);
+    id("to-login-form").addEventListener("click", toggleLoginCreateAcc);
+    id("to-create-acc-form").addEventListener("click", toggleLoginCreateAcc);
+
     id("btn-create-listing").addEventListener("click", displayListingForm);
 
     id("btn-back").addEventListener("click", backToItemDisplay);
@@ -95,19 +99,34 @@
     id("btn-search").addEventListener("click", fetchItemQuery);
   }
 
-  /** Disables other views and refetches items, acts as "refresh" of items */
-  function setBuyView() {
-    id("buy-view").classList.remove("hidden");
+  function hideAllViews() {
+    id("login-view").classList.add("hidden");
+    id("buy-view").classList.add("hidden");
     id("sell-view").classList.add("hidden");
     id("product-view").classList.add("hidden");
+  }
+
+  function setLoginView() {
+    hideAllViews();
+    id("login-view").classList.remove("hidden");
+  }
+
+  function toggleLoginCreateAcc() {
+    id("create-account-form").classList.toggle("hidden");
+    id("login-form").classList.toggle("hidden");
+  }
+
+  /** Disables other views and refetches items, acts as "refresh" of items */
+  function setBuyView() {
+    hideAllViews();
+    id("buy-view").classList.remove("hidden");
     resetItemDisplay();
     fetchAllItems();
   }
 
   /** Swaps from buy view to sell view */
   function setSellView() {
-    id("buy-view").classList.add("hidden");
-    id("product-view").classList.add("hidden");
+    hideAllViews();
     id("sell-view").classList.remove("hidden");
     resetItemDisplay();
   }
