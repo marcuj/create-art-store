@@ -18,7 +18,7 @@
     <header>
       <section class="top-bar">
         <div id="user">
-          <button id="btn-login">Login</button>
+          <button id="btn-view-login">Login</button>
           <button id="btn-view-profile" class="hidden">Profile</button>
         </div>
       </section>
@@ -55,20 +55,29 @@
       </section>
 
       <section id="sell-view" class="hidden">
-        <h2>Sell</h2>
+        <h2>Sell Products</h2>
 
         <!-- if logged in hide this -->
         <p class="hidden">Login required.</p>
 
         <!-- if not logged in hide below -->
-        <section id="listed-items-display">
-          <h3>Items you currently have for sale</h3>
-          <p>No items.</p>
+        <div id="logged-in-view">
+          <div>
+            <h3>Items you currently have for sale</h3>
+            <section id="listed-item-display" class="hide-items"></section>
+            <button id="btn-expand-list" class="">Expand</button>
+          </div>
+
+          <p class="hidden">No items.</p>
+
           <button id="btn-create-listing">List new item</button>
           <section id="create-listing" class="hidden">
-            <h3>Create new listing</h3>
+            <div class="top-bar">
+              <h3>Create New Listing</h3>
+              <button id="btn-cancel-list" type="reset" form="list-form">X</button>
+            </div>
             <!-- server post ! -->
-            <form action="" method="post">
+            <form id="list-form" action="" method="post">
               <div id="name-input">
                 <p>Product name</p>
                 <input type="text" name="product-name" placeholder="Enter name">
@@ -95,7 +104,7 @@
                 <input type="file" name="product-thumb" accept="image/*">
               </div>
 
-              <input id="btn-list" type="submit" name="product-submit">
+              <button id="btn-list" type="submit" name="product-submit">Submit</button>
             </form>
           </section>
         </section>
@@ -126,22 +135,28 @@
           <h2>Log in to your account</h2>
           <!-- set up post connected to server, https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form -->
           <form action="" method="post">
-            <input type="text" name="username" placeholder="Username">
+            <input type="text" name="email" placeholder="Email">
             <input type="text" name="password" placeholder="Password">
             <button id="btn-login" type="submit" name="login">Log in</button>
           </form>
-          <button id="to-create-acc-form">Don't have an account? Create one.</button>
+          <div class="swap-login">
+            <button id="to-create-acc-form">Don't have an account? Create one.</button>
+          </div>
+          
         </div>
         
         <div id="create-account-form" class="hidden">
           <h2>Create a new account</h2>
           <form action="" method="post">
-            <input type="text" name="username" placeholder="Username">
+            <input type="text" name="email" placeholder="Email">
             <input type="text" name="password" placeholder="Password">
             <input type="text" name="confirm-password" placeholder="Confirm password">
             <button id="btn-create-acc" type="submit" name="create-acc">Create account</button>
           </form>
-          <button id="to-login-form">Already have an account? Login.</button>
+          <div class="swap-login">
+            <button id="to-login-form">Already have an account? Login.</button>
+          </div>
+          
         </div>
       </section>
 

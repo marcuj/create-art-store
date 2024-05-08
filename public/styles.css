@@ -13,16 +13,33 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-main {
-  max-width: 70%;
+#login-view, #buy-view, #product-view, #sell-view {
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
   padding-top: 5px;
   margin-top: 20px;
+  box-shadow: #00000065 0px 0px 80px;
+  background-color: #212121c3;
 }
 
-header, main {
+#login-view {
+  max-width: 25%;
+}
+
+#buy-view, #product-view {
+  max-width: 70%;
+}
+
+#sell-view {
+max-width: 58%;
+}
+
+#sell-view > h2 {
+  text-align: center;
+}
+
+header {
   box-shadow: #00000065 0px 0px 80px;
   background-color: #212121c3;
 }
@@ -64,7 +81,7 @@ input:focus {
   outline: none;
 }
 
-main, input, button, img, .row, .tile, #category-setting, #grid-setting, #create-listing {
+#login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing {
   border-radius: 15px;
 }
 
@@ -120,14 +137,14 @@ select {
   align-items: center;
 }
 
-#btn-view-profile, #btn-view-login, #btn-buy, #btn-sell {
+#to-create-acc-form, #to-login-form, #btn-view-profile, #btn-view-login, #btn-buy, #btn-sell, #btn-expand-list {
   color: white;
   background-color: #ffffff05;
   border-color: #ffffff09;
   border-width: 2px;
 }
 
-#btn-view-profile:hover, #btn-view-login:hover, #btn-buy:hover, #btn-sell:hover {
+#to-create-acc-form:hover, #to-login-form:hover, #btn-view-profile:hover, #btn-view-login:hover, #btn-buy:hover, #btn-sell:hover, #btn-expand-list:hover {
   background-color: #ffffff09;
 }
 
@@ -143,10 +160,15 @@ select {
   background-color: #ffffffcc;
 }
 
-#item-display {
+#item-display, #listed-item-display {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.hide-items {
+  max-height: 475px;
+  overflow: hidden;
 }
 
 .card {
@@ -155,13 +177,25 @@ select {
   display: flex;
 }
 
-.card:hover {
+#item-display .card:hover {
   background-color: #161616;
 }
 
 .row {
   flex-direction: row;
   height: 236px;
+  width: 100%;
+  min-width: 0;
+}
+
+.row img {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#listed-item-display .card {
+  flex-direction: row;
+  height: 150px;
   width: 100%;
   min-width: 0;
 }
@@ -174,9 +208,25 @@ select {
   margin-right: 5px;
 }
 
-.card img {
+.tile img {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#item-display .card img {
   height: 236px;
   width: 250.4px;
+}
+
+#listed-item-display .card {
+  height: 150px;
+}
+
+#listed-item-display .card img {
+  height: 150px;
+  width: 175px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .row .item-info {
@@ -199,15 +249,68 @@ select {
   display: none;
 }
 
+#login-view form {
+  width: 67%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#login-view h2 {
+  text-align: center;
+}
+
+#btn-create-acc, #btn-login {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#btn-create-listing {
+  margin: 0;
+}
+
+.swap-login {
+  display: flex;
+  justify-content: center;
+}
+
+#btn-expand-list {
+  color: white;
+  background-color: transparent;
+  width: 100px;
+}
+
+#logged-in-view > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-top: 1px solid #303030;
+  border-bottom: 1px solid #303030;
+}
+
+#logged-in-view h3 {
+  margin-top: 5px;
+}
+
 #create-listing {
   background-color: #121212;
   padding: 20px;
+  border-top-left-radius: 0;
 }
 
 #create-listing > form > div {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+#create-listing > .top-bar > h3 {
+  margin-right: auto;
 }
 
 #create-listing p {
@@ -222,6 +325,16 @@ select {
 #product-image {
   width: 40%;
   margin-right: 20px;
+}
+
+.no-bottom-radius {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.no-right-radius {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .hidden {

@@ -74,6 +74,8 @@
     stock: 5031
   }];
 
+  let loggedIn = true;
+
   window.addEventListener("load", init);
 
   /**
@@ -88,11 +90,13 @@
     id("btn-buy").addEventListener("click", setBuyView);
     id("btn-sell").addEventListener("click", setSellView);
 
-    id("btn-login").addEventListener("click", setLoginView);
+    id("btn-view-login").addEventListener("click", setLoginView);
     id("to-login-form").addEventListener("click", toggleLoginCreateAcc);
     id("to-create-acc-form").addEventListener("click", toggleLoginCreateAcc);
 
-    id("btn-create-listing").addEventListener("click", displayListingForm);
+    id("btn-expand-list").addEventListener("click", toggleExpandList);
+    id("btn-create-listing").addEventListener("click", toggleListingForm);
+    id("btn-cancel-list").addEventListener("click", toggleListingForm);
 
     id("btn-back").addEventListener("click", backToItemDisplay);
 
@@ -131,11 +135,13 @@
     hideAllViews();
     id("sell-view").classList.remove("hidden");
     resetItemDisplay();
+    fetchListedItems();
   }
 
   /** Shows create new listing form */
-  function displayListingForm() {
-    id("create-listing").classList.remove("hidden");
+  function toggleListingForm() {
+    id("create-listing").classList.toggle("hidden");
+    id("btn-create-listing").classList.toggle("no-bottom-radius");
   }
 
   /** Swaps from product page to grid */
@@ -150,7 +156,7 @@
    */
   function fetchAllItems() {
     for (let i = 0; i < MOCK_ITEMS.length; i++) {
-      createCard(MOCK_ITEMS[i]);
+      createCard(MOCK_ITEMS[i], true);
     }
   }
 
@@ -166,21 +172,60 @@
   /** Deletes products on display */
   function resetItemDisplay() {
     id("item-display").innerHTML = "";
+    id("listed-item-display").innerHTML = "";
+  }
+
+  function fetchListedItems() {
+    if (loggedIn) {
+      qs("#sell-view > p").classList.add("hidden");
+      id("logged-in-view").classList.remove("hidden");
+      id("listed-item-display").classList.add("hide-items")
+
+      let listedItems = MOCK_ITEMS;
+      if (listedItems.length > 0) {
+        qs("#logged-in-view > p").classList.add("hidden");
+        for (let i = 0; i < listedItems.length; i++) {
+          createCard(MOCK_ITEMS[i], false);
+        }
+        if (listedItems.length > 3) {
+          id("btn-expand-list").classList.remove("hidden");
+        } else {
+          id("btn-expand-list").classList.add("hidden");
+        }
+      } else {
+        qs("#logged-in-view > p").classList.remove("hidden");
+      }
+
+    } else {
+      qs("#sell-view > p").classList.remove("hidden");
+      id("logged-in-view").classList.add("hidden");
+    }
+  }
+
+  function toggleExpandList() {
+    id("listed-item-display").classList.toggle("hide-items")
   }
 
   /**
    * Creates product card
    * @param {Object} item - item JSON object info
    */
-  function createCard(item) {
+  function createCard(item, isMain) {
     let card = gen("div");
     let thumb = genProductImg(item);
     let itemInfo = genProductInfo(item);
-    card = applyCurrSettings(card, item);
     card.appendChild(thumb);
     card.appendChild(itemInfo);
-    id("item-display").appendChild(card);
-    card.addEventListener("click", () => showProductPage(item.productID));
+    if (isMain) {
+      card = applyCurrSettings(card, item);
+      id("item-display").appendChild(card);
+      card.addEventListener("click", () => showProductPage(item.productID));
+    } else {
+      card.classList.add("card");
+      id("listed-item-display").appendChild(card);
+      // create/add edit button
+    }
+    
   }
 
   /**
@@ -268,17 +313,17 @@
   function showProductPage(productID) {
     // temp item - instead fetch from API
     let item = MOCK_ITEMS[productID];
-    let productEl = id("product-display");
+    // let productEl = id("product-display");
 
     let imageEl = id("product-image");
     imageEl.src = item.thumb;
     imageEl.alt = item.productName;
 
-    qs(productEl, "h2").textContent = item.productName;
-    qs(productEl, ".category-tag").textContent = item.category;
-    qs(productEl, ".price-tag").textContent = formatCurrency(item.price);
-    qs(productEl, ".item-description").textContent = item.description;
-    qs(productEl, ".item-stock").textContent = "In stock: " + item.stock;
+    qs("#product-display h2").textContent = item.productName;
+    qs("#product-display .category-tag").textContent = item.category;
+    qs("#product-display .price-tag").textContent = formatCurrency(item.price);
+    qs("#product-display .item-description").textContent = item.description;
+    qs("#product-display .item-stock").textContent = "In stock: " + item.stock;
 
     id("buy-view").classList.add("hidden");
     id("product-view").classList.remove("hidden");
@@ -308,7 +353,7 @@
       let card = cards[i];
 
       // instead get from database when working? or diff way to store category tag?
-      let productCategory = qs(card, ".category-tag").textContent.toLowerCase();
+      let productCategory = qs(".category-tag", card).textContent.toLowerCase();
       if (productCategory === category || category === "all") {
         card.classList.remove("hidden");
       } else {
@@ -322,7 +367,7 @@
    * @returns {String} - category setting
    */
   function getCatSetting() {
-    let categorySelect = qs(id("category-setting"), "select");
+    let categorySelect = qs("#category-setting select");
     return categorySelect.options[categorySelect.selectedIndex].value;
   }
 
@@ -350,7 +395,7 @@
    * @param {String} selector - class name to get HTML element
    * @return {Element} - HTML element with given selector under given node
    */
-  function qs(node = document, selector) {
+  function qs(selector, node = document) {
     return node.querySelector(selector);
   }
 
