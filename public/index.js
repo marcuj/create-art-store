@@ -353,6 +353,7 @@
       let card = cards[i];
 
       // instead get from database when working? or diff way to store category tag?
+      // INTSRUCTOR: a good way to change the items based on the selected category would be filtering on that category when you retrieve items to display--this is required feature 5 (search)!
       let productCategory = qs(".category-tag", card).textContent.toLowerCase();
       if (productCategory === category || category === "all") {
         card.classList.remove("hidden");
