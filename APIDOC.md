@@ -1,11 +1,11 @@
-# Store Name API Documentation
-This API retrieves information on items that are listed, sold, and bought in Store Name.
-Additionally, the API handles user logins and registration to Store Name.
+# Create - API Documentation
+This API retrieves information on items that are listed, sold, and bought in Create.
+Additionally, the API handles user logins and registration to Create.
 
 ## Retrieving Listed Items
 **Endpoint:** `/listings`
 
-**Description:** Get a list of items listed on Store Name with optional filtering criteria (described below in params).
+**Description:** Get a list of items listed on Create with optional filtering criteria (described below in params).
 Each item can be filtered by title, price, category, and seller. If no filters, returns all listed items.
 
 **Request Type:** `GET`
@@ -60,7 +60,7 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 ## Transactions
 **Endpoint:** `/transactions`
 
-**Description:** Get a list of transactions completed on Store Name with optional ability to specify listing ID, seller ID, and buyer ID. Gives date and transaction cost.
+**Description:** Get a list of transactions completed on Create with optional ability to specify listing ID, seller ID, and buyer ID. Gives date and transaction cost.
 
 **Request Type:** `GET`
 
