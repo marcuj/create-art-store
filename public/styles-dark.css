@@ -7,10 +7,9 @@
 */
 
 body {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #121212;
+  color: #FFFFFF;
   font-family: "Roboto", sans-serif;
-  margin: 0px
 }
 
 #login-view, #buy-view, #product-view, #sell-view {
@@ -19,8 +18,8 @@ body {
   padding: 20px;
   padding-top: 5px;
   margin-top: 20px;
-  box-shadow: #00000034 0px 0px 10px;
-  background-color: #ffffff;
+  box-shadow: #00000065 0px 0px 80px;
+  background-color: #212121c3;
 }
 
 #login-view {
@@ -40,11 +39,12 @@ max-width: 58%;
 }
 
 header {
-  box-shadow: #00000034 0px 0px 20px;
-  background-color: #ffffff;
+  box-shadow: #00000065 0px 0px 80px;
+  background-color: #212121c3;
 }
 
 header h1 {
+  text-shadow: #000000 14px 10px 30px;
   font-size: 46px;
   margin-top: 0px;
 }
@@ -54,15 +54,25 @@ header {
   padding: 30px;
 }
 
+a {
+  color: #DEDEDE;
+}
+
+nav > a {
+  padding: 15px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
 img {
   object-fit: cover;
   overflow: hidden;
-  background-color: rgb(110, 134, 114);
+  background-color: black;
 }
 
 input {
-  background-color: #00000017;
-  color: #000000;
+  background-color: #111111;
+  color: white;
   border: none;
 }
 
@@ -71,13 +81,13 @@ input:focus {
 }
 
 #login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing {
-  border-radius: 10px;
+  border-radius: 15px;
 }
 
 #category-setting, #grid-setting {
   height: 16px;
   padding: 10px;
-  background-color: #00000017;
+  background-color: #111111;
 }
 
 input, button, #display-settings {
@@ -126,32 +136,27 @@ select {
   align-items: center;
 }
 
-#to-create-acc-form, #to-login-form, #btn-view-profile, #btn-view-login, #btn-buy, #btn-sell, #btn-expand-list, #btn-create-listing {
-  color: #000000;
-  background-color: #00000009;
-  border-color: #00000017;
+#to-create-acc-form, #to-login-form, #btn-view-profile, #btn-view-login, #btn-buy, #btn-sell, #btn-expand-list {
+  color: white;
+  background-color: #ffffff05;
+  border-color: #ffffff09;
   border-width: 2px;
 }
 
-#to-create-acc-form:hover, #to-login-form:hover, #btn-view-profile:hover, #btn-view-login:hover, #btn-buy:hover, #btn-sell:hover, #btn-expand-list:hover, #btn-create-listing:hover {
-  background-color: #0000001a;
-}
-
-#search-inp {
-  border-radius: 15px;
+#to-create-acc-form:hover, #to-login-form:hover, #btn-view-profile:hover, #btn-view-login:hover, #btn-buy:hover, #btn-sell:hover, #btn-expand-list:hover {
+  background-color: #ffffff09;
 }
 
 #btn-search {
   color: black;
-  background-color: #00000009;
-  border-color: #00000017;
+  background-color: white;
+  border-color: white;
   width: 30px;
   height: 30px;
-  border-radius: 15px;
 }
 
 #btn-search:hover {
-  background-color: #0000001a;
+  background-color: #ffffffcc;
 }
 
 #item-display, #listed-item-display {
@@ -167,13 +172,12 @@ select {
 
 .card {
   margin-bottom: 10px;
-  background-color: #FFFFFF;
+  background-color: #111111;
   display: flex;
-  border: 1px solid #d8d8d8 ;
 }
 
 #item-display .card:hover {
-  background-color: #0000000a;
+  background-color: #161616;
 }
 
 .row {
@@ -201,7 +205,6 @@ select {
   width: 250.4px;
   margin-left: 5px;
   margin-right: 5px;
-  margin-bottom: 40px;
 }
 
 .tile img {
@@ -216,7 +219,6 @@ select {
 
 #listed-item-display .card {
   height: 150px;
-  border: 1px solid #d8d8d8 ;
 }
 
 #listed-item-display .card img {
@@ -226,16 +228,12 @@ select {
   border-bottom-right-radius: 0;
 }
 
-.item-info {
-  padding: 10px;
-}
-
 .row .item-info {
   width: calc(100% - 250.4px);
 }
 
 .tile .item-info {
-  width: calc(100% - 20px);
+  width: 100%;
 }
 
 .tile .item-subinfo {
@@ -279,7 +277,7 @@ select {
 }
 
 #btn-expand-list {
-  color: #00000091;
+  color: white;
   background-color: transparent;
   width: 100px;
 }
@@ -290,8 +288,8 @@ select {
   align-items: center;
   padding: 8px;
   margin-bottom: 10px;
-  border-top: 1px solid #d8d8d8;
-  border-bottom: 1px solid #d8d8d8;
+  border-top: 1px solid #303030;
+  border-bottom: 1px solid #303030;
 }
 
 #logged-in-view h3 {
@@ -299,10 +297,9 @@ select {
 }
 
 #create-listing {
-  background-color: #ffffff;
+  background-color: #121212;
   padding: 20px;
   border-top-left-radius: 0;
-  border: 1px solid #d8d8d8;
 }
 
 #create-listing > form > div {
@@ -327,11 +324,6 @@ select {
 #product-image {
   width: 40%;
   margin-right: 20px;
-}
-
-#list-form > div > p {
-  width: 120px;
-  text-align: right;
 }
 
 .no-bottom-radius {
