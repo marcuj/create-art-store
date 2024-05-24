@@ -345,7 +345,10 @@
     }
   }
 
-  /** On cataegory change updates items displayed to align with what category is selected */
+  /** 
+   * On cataegory change updates items displayed to align with what category is selected 
+   * TODO: INSTEAD REFETCH ITEMS FROM API
+   */
   function changeCategory() {
     let category = getCatSetting();
     let cards = qsa(".card");
