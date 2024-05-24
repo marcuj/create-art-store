@@ -19,7 +19,7 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 | upperPrice | Integer (*optional*) <br> The upper limit on price of items, must be integer greater than 0 |
 | lowerPrice | Integer (*optional*) <br> The lower limit on price of items, must be integer greater than 0 |
 | category | String (*optional*) <br> Get items by category, can be category ID or exact category name |
-| sellerID | Integer (*optional*) <br> Get items by seller ID, giving items listed by user with that ID
+| username | String (*optional*) <br> Get items by seller username, giving items listed by user with that username
 
 
 **Example Request:** `/listings?search=green&lowerPrice=50&category=painting`
@@ -28,21 +28,21 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 
 ```json
 [{
-    "listingID": 3,
+    "id": 3,
     "title": "Green Countryside Landscape Oil Painting",
     "price": 65.99, 
     "stock": 5,
     "category": "painting", 
-    "sellerID": 12434,
+    "username": "painter34",
     "description": "Lovely green landscape oil painting with trees and such I guess."
 },
 {
-    "listingID": 43,
+    "id": 43,
     "title": "Tropical Green Bird on Branch",
     "price": 50, 
     "stock": 7,
     "category": "painting", 
-    "sellerID": 78652,
+    "username": "painter52",
     "description": "Tropical bird with green feathers sitting on a branch in a rainforest."
 }]
 
@@ -53,8 +53,8 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Category does not exist" or "Seller ID does not exist"
-- Occurs when given category or seller ID does not exist
+`400` error: "Category does not exist" or "Username does not exist"
+- Occurs when given category or seller username does not exist
 
 
 ## Transactions
@@ -70,10 +70,10 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 |Param|Description|
 |:---|:---|
 | listingID | Integer (*optional*) <br> Get transactions by listing ID |
-| sellerID | Integer (*optional*) <br> Get transactions by seller's user ID |
-| buyerID | Integer (*optional*) <br> Get transactions by buyer's user ID |
+| sellerUser | String (*optional*) <br> Get transactions by seller's username |
+| buyerUser | String (*optional*) <br> Get transactions by buyer's username |
 
-**Example Request:** `/transactions?listingID=3&sellerID=12434`
+**Example Request:** `/transactions?listingID=3&sellerUser=painter34`
 
 **Example Response:**
 
@@ -81,14 +81,14 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 [{
     "listingID": 3,
     "cost": 65.99, 
-    "sellerID": 12434,
-    "buyerID": 89723
+    "sellerUser": "painter34",
+    "buyerUser": "buyer1"
 },
 {
     "listingID": 3,
     "cost": 65.99, 
-    "sellerID": 12434,
-    "buyerID": 05867
+    "sellerID": "painter34",
+    "buyerID": "buyer2"
 }]
 
 ```
@@ -98,8 +98,8 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Buyer ID does not exist" or "Seller ID does not exist" or "Listing ID does not exist"
-- Occurs when given buyer ID, seller ID, or listing ID does not exist
+`400` error: "Buyer username does not exist" or "Seller username does not exist" or "Listing ID does not exist"
+- Occurs when given buyer username, seller username, or listing ID does not exist
 
 
 ## Making a Listing
@@ -119,10 +119,10 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 | price | Number (*required*) <br> Price of the item being listed |
 | stock | Integer (*required*) <br> Initial stock of the item being listed |
 | category | String (*required*) <br> Category of the item being listed |
-| sellerID | Integer (*required*) <br> User ID of the user listing the item |
+| username | Integer (*required*) <br> Username of the user listing the item |
 | description | String (*required*) <br> Description of the item being listed |
 
-**Example Request:** `/listings/add?title=Green+Bird&price=52.99&stock=5&category=painting&sellerID=12432&description=Painting+of+green+bird`
+**Example Request:** `/listings/add?title=Green+Bird&price=52.99&stock=5&category=painting&username=painter32&description=Painting+of+green+bird`
 
 **Example Response:**
 
@@ -138,8 +138,8 @@ Item "Green Bird" is listed for sale.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the six parameters
 
-`400` error: "User ID does not exist"
-- Occurs when the given seller ID does not exist
+`400` error: "Username does not exist"
+- Occurs when the given seller username does not exist
 
 
 ## Create New Transaction
@@ -156,10 +156,10 @@ Item "Green Bird" is listed for sale.
 |:---|:---|
 | listingID | Integer (*required*) <br> The listing ID of the item being purchased |
 | cost | Number (*required*) <br> Amount spent by the buyer for the transaction |
-| sellerID | Integer (*required*) <br> User ID of the user who listed the item |
-| buyerID | Integer (*required*) <br> User ID of the user who purchased the item |
+| sellerUser | Integer (*required*) <br> Username of the user who listed the item |
+| buyerUser | Integer (*required*) <br> Username of the user who purchased the item |
 
-**Example Request:** `/transactions/add?listingID=3&cost=59&sellerID=12434&buyerID=65923`
+**Example Request:** `/transactions/add?listingID=3&cost=59&sellerUser=painter34&buyerID=buyer1`
 
 **Example Response:**
 
@@ -175,8 +175,8 @@ Transaction of item 3 completed.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the four parameters
 
-`400` error: "Buyer ID does not exist" or "Seller ID does not exist" or "Listing ID does not exist"
-- Occurs when given buyer ID, seller ID, or listing ID does not exist
+`400` error: "Buyer username does not exist" or "Seller username does not exist" or "Listing ID does not exist"
+- Occurs when given buyer username, seller username, or listing ID does not exist
 
 
 ## User Login
@@ -191,12 +191,12 @@ Transaction of item 3 completed.
 **Params**:
 |Param|Description|
 |:---|:---|
-| email | String (*required*) <br> Email of user's account |
-| password | String (*required*) <br> Password of account associated to given email |
+| username | String (*required*) <br> Username of user's account |
+| password | String (*required*) <br> Password of account associated to given username |
 
-**Example Request:** Email: mjundt2@uw.edu, Password: cheese
+**Example Request:** Username: mjundt2, Password: cheese
 
-`/login?email=mjundt%40uw%2Eedu&password=cheese`
+`/login?username=mjundt2&password=cheese`
 
 **Example Response:**
 
@@ -212,17 +212,17 @@ Login successful.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the two parameters
 
-`400` error: "Email is not associated with an existing account"
-- Occurs when given email doesn't have an account
+`400` error: "Username is not associated with an existing account"
+- Occurs when given username doesn't have an account
 
 `400` error: "Incorrect password"
-- Occurs when password is incorrect for the account associated with given email
+- Occurs when password is incorrect for the account associated with given username
 
 
 ## Create New User
 **Endpoint:** `/register`
 
-**Description:** Registers an account to the store with given email and password.
+**Description:** Registers an account to the store with given username and password.
 
 **Request Type:** `POST`
 
@@ -231,17 +231,17 @@ Login successful.
 **Params**:
 |Param|Description|
 |:---|:---|
-| email | String (*required*) <br> Email for user's new account |
+| username | String (*required*) <br> Username for user's new account |
 | password | String (*required*) <br> Password of new account |
 
-**Example Request:** Email: mjundt2@uw.edu, Password: cheese
+**Example Request:** Username: mjundt2, Password: cheese
 
-`/transactions?email=mjundt%40uw%2Eedu&password=cheese`
+`/transactions?username=mjundt2&password=cheese`
 
 **Example Response:**
 
 ```
-Registration with email "mjundt2@uw.edu" successful.
+Registration with username "mjundt2" successful.
 ```
 
 **Error Handling:**
@@ -252,5 +252,5 @@ Registration with email "mjundt2@uw.edu" successful.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the two parameters
 
-`400` error: "Email is already associated with an existing account"
-- Occurs when given email already has an account
+`400` error: "Username is already associated with an existing account"
+- Occurs when given username already has an account
