@@ -40,20 +40,37 @@ app.get('/listings', async (req, res) => {
 
     let db = await getDBConnection();
 
+    let sql = "SELECT * FROM listings WHERE";
+    let placeholders = [];
+
     if (search) {
-      search = "%" + search + "%";
-      let sql = "SELECT id FROM yips WHERE yip LIKE ? ORDER BY id";
-      let yips = await db.all(sql, [search]);
-      await db.close();
-      yips = {"yips": yips};
-      res.json(yips);
-    } else {
-      let sql = "SELECT * FROM yips ORDER BY DATETIME(date) DESC";
-      let yips = await db.all(sql);
-      await db.close();
-      yips = {"yips": yips};
-      res.json(yips);
+      placeholders.push(search);
+      sql += " title LIKE ? AND";
     }
+    if (upperPrice) {
+      placeholders.push(upperPrice);
+      sql += " price < ? AND";
+    }
+    if (lowerPrice) {
+      placeholders.push(lowerPrice);
+      sql += " price > ? AND";
+    }
+    if (category) {
+      placeholders.push(category);
+      sql += " category = ? AND";
+      // check if category exist
+    }
+    if (username) {
+      placeholders.push(username);
+      sql += " username = ? AND";
+      // check if username exist
+    }
+    let ind = sql.lastIndexOf(" ");
+    sql = sql.substring(0, ind);
+    let items = await db.all(sql);
+    await db.close();
+    res.json(items);
+    
   } catch (err) {
     res.type('text');
     res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
