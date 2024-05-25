@@ -75,6 +75,7 @@
   }];
 
   let loggedIn = true;
+  let currSearch = null;
 
   window.addEventListener("load", init);
 
@@ -101,13 +102,17 @@
     id("btn-back").addEventListener("click", backToItemDisplay);
 
     id("btn-search").addEventListener("click", fetchItemQuery);
+    id("btn-filter").addEventListener("click", toggleFilters);
   }
 
   function hideAllViews() {
+    resetItemDisplay();
     id("login-view").classList.add("hidden");
     id("buy-view").classList.add("hidden");
     id("sell-view").classList.add("hidden");
     id("product-view").classList.add("hidden");
+    id("filter-view").classList.add("hidden");
+    id("right-column").classList.add("hidden");
   }
 
   function setLoginView() {
@@ -126,7 +131,6 @@
   function setBuyView() {
     hideAllViews();
     id("buy-view").classList.remove("hidden");
-    resetItemDisplay();
     fetchAllItems();
   }
 
@@ -134,9 +138,14 @@
   function setSellView() {
     hideAllViews();
     id("sell-view").classList.remove("hidden");
-    resetItemDisplay();
     fetchListedItems();
   }
+
+  function toggleFilters() {
+    id("filter-view").classList.toggle("hidden");
+    id("right-column").classList.toggle("hidden");
+  }
+
 
   /** Shows create new listing form */
   function toggleListingForm() {

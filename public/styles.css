@@ -13,14 +13,37 @@ body {
   margin: 0px
 }
 
-#login-view, #buy-view, #product-view, #sell-view {
-  margin-left: auto;
-  margin-right: auto;
+main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#filter-view, #login-view, #buy-view, #product-view, #sell-view {
   padding: 20px;
   padding-top: 5px;
   margin-top: 20px;
+  margin-bottom: 20px;
   box-shadow: #00000034 0px 0px 10px;
   background-color: #ffffff;
+}
+
+#login-view, #buy-view, #product-view, #sell-view {
+  margin: 20px
+}
+
+#filter-view, #right-column {
+  width: 10%;
+}
+
+#right-column {
+  padding: 20px;
 }
 
 #login-view {
@@ -28,7 +51,7 @@ body {
 }
 
 #buy-view, #product-view {
-  max-width: 70%;
+  max-width: 65%;
 }
 
 #sell-view {
@@ -70,25 +93,58 @@ input:focus {
   outline: none;
 }
 
-#login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing {
+#login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing, #filter-view {
   border-radius: 10px;
 }
 
-#category-setting, #grid-setting {
+#grid-setting {
   height: 16px;
   padding: 10px;
   background-color: #00000017;
+}
+
+#filter-view > div {
+  margin-bottom: 16px;
+}
+
+#filter-view p {
+  margin: 0;
+}
+
+#price-setting > div, #category-setting {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 30px;
 }
 
 input, button, #display-settings {
   font-size: 18px;
 }
 
-input, button {
-  font-size: 18px;
+#search-inp, button {
   margin: 5px;
   height: 36px;
   padding: 10px;
+}
+
+input, button {
+  font-size: 18px;
+}
+
+input {
+  padding: 6px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+#range-input > input {
+  font-size: 14px;
+  width: 40px;
+}
+
+#range-input p {
+  margin: 8px;
 }
 
 button {
@@ -101,6 +157,12 @@ button {
   margin-bottom: 0px;
   display: flex;
   justify-content: flex-end;
+}
+
+.space-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #category-setting p {
@@ -126,14 +188,14 @@ select {
   align-items: center;
 }
 
-#to-create-acc-form, #to-login-form, #btn-view-profile, #btn-view-login, #btn-buy, #btn-sell, #btn-expand-list, #btn-create-listing {
+button {
   color: #000000;
   background-color: #00000009;
   border-color: #00000017;
   border-width: 2px;
 }
 
-#to-create-acc-form:hover, #to-login-form:hover, #btn-view-profile:hover, #btn-view-login:hover, #btn-buy:hover, #btn-sell:hover, #btn-expand-list:hover, #btn-create-listing:hover {
+button:hover {
   background-color: #0000001a;
 }
 
@@ -251,20 +313,18 @@ select {
 }
 
 #login-view form {
-  width: 67%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
 }
 
 #login-view h2 {
   text-align: center;
 }
 
-#btn-create-acc, #btn-login {
-  width: 50%;
+#btn-create-acc, #btn-login, #login-view form > input {
   margin-left: auto;
   margin-right: auto;
 }
@@ -278,9 +338,15 @@ select {
   justify-content: center;
 }
 
-#btn-expand-list {
+.swap-login > button, #btn-expand-list, #btn-clear-filter {
   color: #00000091;
-  background-color: transparent;
+}
+
+#btn-apply-filter {
+  width: 100%;
+}
+
+#btn-expand-list {
   width: 100px;
 }
 

@@ -29,6 +29,59 @@
       </div>
     </header>
     <main>
+      <section id="filter-view" class="hidden">
+        <div class="space-bar">
+          <h1>Filters</h1>
+          <button id="btn-clear-filter">Clear</button>
+        </div>
+        
+
+        <div id="category-setting">
+          <p><strong>Category</strong></p>
+          <select>
+            <!-- add options based on whats in DB, can do JS on load -->
+            <option value="all" selected>All</option>
+            <option value="egg">Egg</option>
+            <option value="chicken">Chicken</option>
+          </select>
+        </div>
+
+        <div id="price-setting">
+          <p><strong>Price</strong></p>
+          <div>
+            <input id="any-price" type="radio" name="price" value="any" checked>
+            <label for="any-price">Any price</label>
+          </div>
+          <div>
+            <input id="range-1" type="radio" name="price" value="2">
+            <label for="range-1">Under $25</label>
+          </div>
+          <div>
+            <input id="range-2" type="radio" name="price" value="3">
+            <label for="range-2">$25 to $100</label>
+          </div>
+          <div>
+            <input id="range-3" type="radio" name="price" value="4">
+            <label for="range-3">$100 to $250</label>
+          </div>
+          <div>
+            <input id="range-4" type="radio" name="price" value="5">
+            <label for="range-4">Over $250</label>
+          </div>
+          <div>
+            <input id="custom-range" type="radio" name="price" value="5">
+            <label for="custom-range">Custom</label>
+          </div>  
+          <div id="range-input">
+            <input id="lower-price" type="text" name="low" placeholder="Low">
+            <p>to</p>
+            <input id="upper-price" type="text" name="high" placeholder="High">
+          </div>
+        </div>
+        <button id="btn-apply-filter">Apply</button>
+
+      </section>
+
       <section id="buy-view">
         <section id="display-settings">
           <div id="search-bar">
@@ -37,23 +90,19 @@
             <button id="btn-search">&gt;</button>
           </div>
 
-          <div id="category-setting">
-            <p>Category</p>
-            <select>
-              <!-- add options based on whats in DB, can do JS on load -->
-              <option value="all" selected>All</option>
-              <option value="egg">Egg</option>
-              <option value="chicken">Chicken</option>
-            </select>
-          </div>
-
           <label id="grid-setting">
             <input type="checkbox" name="grid">
             Grid
           </label>
+
+          <button id="btn-filter">Filters &#9776;</button>
+
         </section>
+        
         <section id="item-display"></section>
       </section>
+
+      <div id="right-column" class="hidden"></div>
 
       <section id="sell-view" class="hidden">
         <h2>Sell Products</h2>
@@ -73,7 +122,7 @@
 
           <button id="btn-create-listing">List new item</button>
           <section id="create-listing" class="hidden">
-            <div class="top-bar">
+            <div class="space-bar">
               <h3>Create New Listing</h3>
               <button id="btn-cancel-list" type="reset" form="list-form">X</button>
             </div>
@@ -164,7 +213,7 @@
     </main>
 
     <footer>
-
+      <p>This is the footer, hello!</p>
     </footer>
   </body>
 </html>
