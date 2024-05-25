@@ -9,6 +9,7 @@ CREATE TABLE listings (
 	title TEXT,
 	price REAL,
 	stock INTEGER,
+	category TEXT REFERENCES categories,
 	username TEXT REFERENCES users,
 	description TEXT,
 	PRIMARY KEY(id AUTOINCREMENT)
@@ -21,4 +22,10 @@ CREATE TABLE transactions (
 	buyerUser TEXT REFERENCES users,
 	cost REAL,
 	PRIMARY KEY(id AUTOINCREMENT)
+);
+
+CREATE TABLE categories (
+	id TEXT,
+	name TEXT,
+	PRIMARY KEY(id)
 );
