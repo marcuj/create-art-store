@@ -37,7 +37,7 @@
 
     id("btn-back").addEventListener("click", backToItemDisplay);
 
-    id("btn-filter").addEventListener("click", toggleFilters);
+    id("btn-filter").addEventListener("click", toggleFilterView);
 
     id("btn-search").addEventListener("click", searchPopulate);
     id("btn-apply-filter").addEventListener("click", (evt) => {
@@ -91,9 +91,14 @@
     populateSellItems();
   }
 
-  function toggleFilters() {
+  function toggleFilterView() {
     id("filter-view").classList.toggle("hidden");
     id("right-column").classList.toggle("hidden");
+  }
+
+  function removeFilterView() {
+    id("filter-view").classList.add("hidden");
+    id("right-column").classList.add("hidden");
   }
 
 
@@ -152,11 +157,8 @@
    */
   async function searchPopulate() {
     try {
-      resetItemDisplay();
-      let input = id("search-inp").value.trim();
-      
-
-      currSearch = input;
+      currSearch = id("search-inp").value.trim();
+      await populateItems();
     } catch (err) {
       handleError();
     }
@@ -172,15 +174,56 @@
    */
   async function filterPopulate() {
     try {
+      currFilters = [getCatFilter()[0], getPriceFilter()];
+      await populateItems();
+    } catch (err) {
+      handleError();
+    }
+  }
+
+  function clearFilterPopulate() {
+    resetFilters();
+    filterPopulate();    
+  }
+
+  function resetFilters() {
+    currFilters = null;
+    id("filter-info").classList.add("hidden");
+    qs("#filter-view > form").reset();
+  }
+
+  /**
+   * Populates home page with all yips
+   */
+  async function populateAllItems() {
+    try {
+      let items = await fetch("/listings");
+      await statusCheck(items);
+      items = await items.json();
+      addItemCards(items);
+    } catch (err) {
+      handleError();
+    }
+  }
+
+  async function populateItems() {
+    try {
       resetItemDisplay();
       id("filter-info").innerHTML = "";
     
       let url = "/listings?";
 
-      let category = getCatFilter()[0];
-      let price = getPriceFilter();
+      let category = currFilters[0];
+      let price = currFilters[1];
+
+      let filter = gen("p");
+      filter.classList.add("applied-filter");
       
+      console.log(currSearch);
       if (currSearch) {
+        let searchFilter = filter.cloneNode();
+        searchFilter.textContent = "Search: " + currSearch;
+        id("filter-info").appendChild(searchFilter);
         url = url + "search=" + currSearch + "&";
       }
 
@@ -188,10 +231,7 @@
         id("filter-info").classList.add("hidden");
       } else {
         id("filter-info").classList.remove("hidden");
-        // add info on what filters were applied to id("filter-info")
-        let filter = gen("p");
-        filter.classList.add("applied-filter");
-
+        
         if (category !== "all") {
           let catFilter = filter.cloneNode();
           catFilter.textContent = getCatFilter()[1];
@@ -216,7 +256,7 @@
       let items = await fetch(url);
       await statusCheck(items);
       items = await items.json();
-      populateBuyItems(items);
+      addItemCards(items);
       currFilters = [category, price];
 
     } catch (err) {
@@ -263,32 +303,7 @@
     return result;
   }
 
-  function clearFilterPopulate() {
-    resetFilters();
-    filterPopulate();    
-  }
-
-  function resetFilters() {
-    currFilters = null;
-    id("filter-info").classList.add("hidden");
-    qs("#filter-view > form").reset();
-  }
-
-  /**
-   * Populates home page with all yips
-   */
-  async function populateAllItems() {
-    try {
-      let items = await fetch("/listings");
-      await statusCheck(items);
-      items = await items.json();
-      populateBuyItems(items);
-    } catch (err) {
-      handleError();
-    }
-  }
-
-  async function populateBuyItems(items) {
+  async function addItemCards(items) {
     if (items.length === 0) {
       let message = gen("p");
       message.textContent = "No items found."
@@ -337,7 +352,7 @@
     if (isMain) {
       card = applyCurrSettings(card, item);
       id("item-display").appendChild(card);
-      card.addEventListener("click", () => showProductPage(item.productID));
+      card.addEventListener("click", () => showProductPage(item.id));
     } else {
       card.classList.add("card");
       id("listed-item-display").appendChild(card);
@@ -375,7 +390,6 @@
     subInfo.classList.add("item-subinfo");
     price.classList.add("price-tag");
     category.classList.add("category-tag");
-    category.classList.add("sub-text");
     description.classList.add("item-description");
 
     productName.textContent = item.title;
@@ -433,25 +447,32 @@
   /**
    * Shows product page of clicked on product
    * TODO: async re-fetch item info
-   * @param {String} productID - ID of product for database
+   * @param {Number} id - ID of product for database
    */
-  function showProductPage(productID) {
-    // temp item - instead fetch from API
-    let item = MOCK_ITEMS[productID];
-    // let productEl = id("product-display");
+  async function showProductPage(itemID) {
+    try {
+      let item = await fetch("/listings?id=" + itemID);
+      await statusCheck(item);
+      item = await item.json();
+      item = item[0];
 
-    let imageEl = id("product-image");
-    imageEl.src = item.thumb;
-    imageEl.alt = item.productName;
+      let imageEl = id("product-image");
+      imageEl.src = item.image;
+      imageEl.alt = item.title;
 
-    qs("#product-display h2").textContent = item.productName;
-    qs("#product-display .category-tag").textContent = item.category;
-    qs("#product-display .price-tag").textContent = formatCurrency(item.price);
-    qs("#product-display .item-description").textContent = item.description;
-    qs("#product-display .item-stock").textContent = "In stock: " + item.stock;
+      qs("#product-view h2").textContent = item.title;
+      qs("#product-view .category-tag").textContent = await getCategoryName(item.category);
+      qs("#product-view .price-tag").textContent = formatCurrency(item.price);
+      qs("#product-view .item-description").textContent = item.description;
+      qs("#product-view .item-stock").textContent = "(" + item.stock + " available)";
 
-    id("buy-view").classList.add("hidden");
-    id("product-view").classList.remove("hidden");
+      removeFilterView();
+      id("buy-view").classList.add("hidden");
+      id("product-view").classList.remove("hidden");
+    } catch (err) {
+      console.log(err);
+      handleError();
+    }
   }
 
   /** Toggles grid/row view in item display */

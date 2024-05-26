@@ -37,6 +37,7 @@ app.get('/listings', async (req, res) => {
     let lowerPrice = req.query.lowerPrice;
     let category = req.query.category;
     let username = req.query.username;
+    let id = req.query.id;
 
     let db = await getDBConnection();
 
@@ -44,6 +45,7 @@ app.get('/listings', async (req, res) => {
     let placeholders = [];
 
     if (search) {
+      search = "%" + search + "%";
       placeholders.push(search);
       sql += " title LIKE ? AND";
     }
@@ -64,6 +66,10 @@ app.get('/listings', async (req, res) => {
       placeholders.push(username);
       sql += " username = ? AND";
       // check if username exist
+    }
+    if (id) {
+      placeholders.push(id);
+      sql += " id = ? AND";
     }
     let ind = sql.lastIndexOf(" ");
     sql = sql.substring(0, ind);
