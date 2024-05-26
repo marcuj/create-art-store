@@ -11,7 +11,7 @@
     <title>Create</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <script src="index.js"></script>
   </head>
   <body>
@@ -30,55 +30,55 @@
     </header>
     <main>
       <section id="filter-view" class="hidden">
-        <div class="space-bar">
-          <h1>Filters</h1>
-          <button id="btn-clear-filter">Clear</button>
-        </div>
+        <form>
+          <div class="space-bar">
+            <h1>Filters</h1>
+            <button id="btn-clear-filter">Clear</button>
+          </div>
         
+        
+          <div id="category-setting">
+            <p><strong>Category</strong></p>
+            <select>
+              <option value="all" selected>All</option>
+            </select>
+          </div>
 
-        <div id="category-setting">
-          <p><strong>Category</strong></p>
-          <select>
-            <!-- add options based on whats in DB, can do JS on load -->
-            <option value="all" selected>All</option>
-            <option value="egg">Egg</option>
-            <option value="chicken">Chicken</option>
-          </select>
-        </div>
-
-        <div id="price-setting">
-          <p><strong>Price</strong></p>
-          <div>
-            <input id="any-price" type="radio" name="price" value="any" checked>
-            <label for="any-price">Any price</label>
+          <div id="price-setting">
+            <p><strong>Price</strong></p>
+            <div>
+              <input id="any-price" type="radio" name="price" value="any-to-any" checked>
+              <label for="any-price">Any price</label>
+            </div>
+            <div>
+              <input id="range-1" type="radio" name="price" value="any-to-25">
+              <label for="range-1">Under $25</label>
+            </div>
+            <div>
+              <input id="range-2" type="radio" name="price" value="25-to-100">
+              <label for="range-2">$25 to $100</label>
+            </div>
+            <div>
+              <input id="range-3" type="radio" name="price" value="100-to-250">
+              <label for="range-3">$100 to $250</label>
+            </div>
+            <div>
+              <input id="range-4" type="radio" name="price" value="250-to-any">
+              <label for="range-4">Over $250</label>
+            </div>
+            <div>
+              <input id="custom-range" type="radio" name="price" value="custom">
+              <label for="custom-range">Custom</label>
+            </div>  
+            <div id="range-input">
+              <input id="lower-price" type="number" min="0" step="0.01" name="low" placeholder="Low">
+              <p>to</p>
+              <input id="upper-price" type="number" min="0" step="0.01" name="high" placeholder="High">
+            </div>
           </div>
-          <div>
-            <input id="range-1" type="radio" name="price" value="2">
-            <label for="range-1">Under $25</label>
-          </div>
-          <div>
-            <input id="range-2" type="radio" name="price" value="3">
-            <label for="range-2">$25 to $100</label>
-          </div>
-          <div>
-            <input id="range-3" type="radio" name="price" value="4">
-            <label for="range-3">$100 to $250</label>
-          </div>
-          <div>
-            <input id="range-4" type="radio" name="price" value="5">
-            <label for="range-4">Over $250</label>
-          </div>
-          <div>
-            <input id="custom-range" type="radio" name="price" value="5">
-            <label for="custom-range">Custom</label>
-          </div>  
-          <div id="range-input">
-            <input id="lower-price" type="text" name="low" placeholder="Low">
-            <p>to</p>
-            <input id="upper-price" type="text" name="high" placeholder="High">
-          </div>
-        </div>
-        <button id="btn-apply-filter">Apply</button>
+          
+          <button id="btn-apply-filter">Apply</button>
+        </form>
 
       </section>
 
@@ -95,7 +95,8 @@
             Grid
           </label>
 
-          <button id="btn-filter">Filters &#9776;</button>
+          <button id="btn-filter">&#9776; Filters</button>
+          <div id="filter-info" class="sub-text"></div>
 
         </section>
         
@@ -115,43 +116,45 @@
           <div>
             <h3>Items you currently have for sale</h3>
             <section id="listed-item-display" class="hide-items"></section>
-            <button id="btn-expand-list" class="">Expand</button>
+            <button id="btn-expand-list" class="hidden">Expand</button>
           </div>
 
-          <p class="hidden">No items.</p>
-
-          <button id="btn-create-listing">List new item</button>
+          <button id="btn-create-listing">&#9776; List new item</button>
           <section id="create-listing" class="hidden">
             <div class="space-bar">
               <h3>Create New Listing</h3>
               <button id="btn-cancel-list" type="reset" form="list-form">X</button>
             </div>
-            <!-- server post ! -->
-            <form id="list-form" action="" method="post">
-              <div id="name-input">
+            
+            <form id="list-form">
+              <div>
                 <p>Product name</p>
-                <input type="text" name="product-name" placeholder="Enter name">
+                <input id="name-input" type="text" name="product-name" placeholder="Enter name">
               </div>
-              <!-- Should have drop-down of available categories from database, JS add options -->
-              <div id="category-input">
+              
+              <div>
                 <p>Category</p>
-                <select name="category">
-                  <option value="none" disabled selected>(Select)</option>
-                  <option value="egg">Egg</option>
-                  <option value="chicken">Chicken</option>
+                <select id="category-input" name="category">
+                  <option value="" disabled selected>(Select)</option>
                 </select>
               </div>
               <!-- Make only accept numbers to 2 decimal places -->
-              <div id="price-input">
+              <div>
                 <p>Price (USD)</p>
-                <input type="text" name="product-price" placeholder="Enter price">
+                <input id="price-input" type="number" name="product-price" placeholder="Enter price">
               </div>
-              <div id="description-input">
+              <div>
                 <p>Description</p>
-                <textarea name="product-description" rows="5" cols="33"></textarea>
+                <textarea id="description-input" name="product-description" rows="5" cols="33"></textarea>
               </div>
-              <div id="thumb-input">
-                <input type="file" name="product-thumb" accept="image/*">
+              <!-- Make only accept INTEGER -->
+              <div>
+                <p>Stock</p>
+                <input id="stock-input" type="number" name="product-stock" placeholder="Enter stock">
+              </div>
+              <div>
+                <p>Product image</p>
+                <input id="image-input" type="url" name="product-image" placeholder="Enter image URL">
               </div>
 
               <button id="btn-list" type="submit" name="product-submit">Submit</button>

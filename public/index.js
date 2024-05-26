@@ -9,73 +9,9 @@
 "use strict";
 (function() {
 
-  const MOCK_ITEMS = [{
-    thumb: "",
-    productName: "Large Egg",
-    productID: 0,
-    price: 4.9,
-    category: "Egg",
-    categoryID: "egg",
-    description: "The Large Egg is a very large egg. This is perfect for large omelette!" +
-      "Buy this now to get a large egg! Please buy this!",
-    stock: 24
-  },
-  {
-    thumb: "",
-    productName: "Long Egg",
-    productID: 1,
-    price: 12,
-    category: "Egg",
-    categoryID: "egg",
-    description: "The Long Egg is a very long egg. This is perfect for long omelette!" +
-      "Buy this now to get a long egg! Please buy this!",
-    stock: 3
-  },
-  {
-    thumb: "",
-    productName: "Big Chicken",
-    productID: 2,
-    price: 49.99,
-    category: "Chicken",
-    categoryID: "chicken",
-    description: "This is a description for Big Chicken! It is a big chicken that can be used for" +
-      "making big chicken salad! Enjoy.",
-    stock: 104
-  },
-  {
-    thumb: "",
-    productName: "Cool Egg",
-    productID: 3,
-    price: 449.5,
-    category: "Egg",
-    categoryID: "egg",
-    description: "This egg is very cool!",
-    stock: 0
-  },
-  {
-    thumb: "",
-    productName: "Product name",
-    productID: 4,
-    price: 50,
-    category: "Egg",
-    categoryID: "egg",
-    description: "This is a description for Product name! What is up",
-    stock: 3
-  },
-  {
-    thumb: "",
-    productName: "Tiny Chicken",
-    productID: 5,
-    price: 75,
-    category: "Chicken",
-    categoryID: "chicken",
-    description: "This is a description for Tiny Chicken! It is a tiny chicken that can be used" +
-      "for making tiny chicken salad! Enjoy.",
-    stock: 5031
-  }];
-
   let loggedIn = true;
   let currSearch = null;
+  let currFilters = null;
 
   window.addEventListener("load", init);
 
@@ -83,10 +19,10 @@
    * Initializes functionality of buttons and fills items display with items
    */
   function init() {
-    fetchAllItems();
+    setBuyView();
+    populateCategories();
 
     id("grid-setting").addEventListener("change", changeGrid);
-    id("category-setting").addEventListener("change", changeCategory);
 
     id("btn-buy").addEventListener("click", setBuyView);
     id("btn-sell").addEventListener("click", setSellView);
@@ -101,18 +37,32 @@
 
     id("btn-back").addEventListener("click", backToItemDisplay);
 
-    id("btn-search").addEventListener("click", fetchItemQuery);
     id("btn-filter").addEventListener("click", toggleFilters);
+
+    id("btn-search").addEventListener("click", searchPopulate);
+    id("btn-apply-filter").addEventListener("click", (evt) => {
+      evt.preventDefault();
+      filterPopulate();
+    });
+    id("btn-clear-filter").addEventListener("click", (evt) => {
+      evt.preventDefault();
+      clearFilterPopulate();
+    });
   }
 
   function hideAllViews() {
     resetItemDisplay();
+    resetFilters();
+    resetSearch();
+    id("list-form").reset();
     id("login-view").classList.add("hidden");
     id("buy-view").classList.add("hidden");
     id("sell-view").classList.add("hidden");
     id("product-view").classList.add("hidden");
     id("filter-view").classList.add("hidden");
     id("right-column").classList.add("hidden");
+    id("create-listing").classList.add("hidden");
+    id("btn-create-listing").classList.remove("no-bottom-radius");
   }
 
   function setLoginView() {
@@ -131,14 +81,14 @@
   function setBuyView() {
     hideAllViews();
     id("buy-view").classList.remove("hidden");
-    fetchAllItems();
+    populateAllItems();
   }
 
   /** Swaps from buy view to sell view */
   function setSellView() {
     hideAllViews();
     id("sell-view").classList.remove("hidden");
-    fetchListedItems();
+    populateSellItems();
   }
 
   function toggleFilters() {
@@ -159,42 +109,23 @@
     id("product-view").classList.add("hidden");
   }
 
-  /**
-   * Fetches items to populate item display
-   * TODO: fetch from API and make async when doing API call
-   */
-  function fetchAllItems() {
-    for (let i = 0; i < MOCK_ITEMS.length; i++) {
-      createCard(MOCK_ITEMS[i], true);
-    }
-  }
-
-  /**
-   * Fetches item from API from query
-   * TODO: fetch from API and make async
-   * @returns {null} - nothing :D for now
-   */
-  function fetchItemQuery() {
-    return null;
-  }
-
   /** Deletes products on display */
   function resetItemDisplay() {
     id("item-display").innerHTML = "";
     id("listed-item-display").innerHTML = "";
   }
 
-  function fetchListedItems() {
+  function populateSellItems() {
     if (loggedIn) {
       qs("#sell-view > p").classList.add("hidden");
       id("logged-in-view").classList.remove("hidden");
       id("listed-item-display").classList.add("hide-items")
 
-      let listedItems = MOCK_ITEMS;
+      let listedItems = [];
       if (listedItems.length > 0) {
         qs("#logged-in-view > p").classList.add("hidden");
         for (let i = 0; i < listedItems.length; i++) {
-          createCard(MOCK_ITEMS[i], false);
+          createCard(listedItems[i], false);
         }
         if (listedItems.length > 3) {
           id("btn-expand-list").classList.remove("hidden");
@@ -202,9 +133,10 @@
           id("btn-expand-list").classList.add("hidden");
         }
       } else {
-        qs("#logged-in-view > p").classList.remove("hidden");
+        let message = gen("p");
+        message.textContent = "No items for sale."
+        id("listed-item-display").appendChild(message);
       }
-
     } else {
       qs("#sell-view > p").classList.remove("hidden");
       id("logged-in-view").classList.add("hidden");
@@ -216,14 +148,191 @@
   }
 
   /**
+   * Populates items from search query and filters if applied
+   */
+  async function searchPopulate() {
+    try {
+      resetItemDisplay();
+      let input = id("search-inp").value.trim();
+      
+
+      currSearch = input;
+    } catch (err) {
+      handleError();
+    }
+  }
+
+  function resetSearch() {
+    id("search-inp").value = "";
+    currSearch = null;
+  }
+
+  /**
+   * Populates items from filters and search query if previously searched
+   */
+  async function filterPopulate() {
+    try {
+      resetItemDisplay();
+      id("filter-info").innerHTML = "";
+    
+      let url = "/listings?";
+
+      let category = getCatFilter()[0];
+      let price = getPriceFilter();
+      
+      if (currSearch) {
+        url = url + "search=" + currSearch + "&";
+      }
+
+      if (category === "all" && price[0] === "any" && price[1] === "any") {
+        id("filter-info").classList.add("hidden");
+      } else {
+        id("filter-info").classList.remove("hidden");
+        // add info on what filters were applied to id("filter-info")
+        let filter = gen("p");
+        filter.classList.add("applied-filter");
+
+        if (category !== "all") {
+          let catFilter = filter.cloneNode();
+          catFilter.textContent = getCatFilter()[1];
+          id("filter-info").appendChild(catFilter);
+          url = url + "category=" + category + "&";
+        }
+        if (price[0] !== "any") {
+          let lowFilter = filter.cloneNode();
+          lowFilter.textContent = "Above " + formatCurrency(price[0]);
+          id("filter-info").appendChild(lowFilter);
+          url = url + "lowerPrice=" + price[0] + "&";
+        }
+        if (price[1] !== "any") {
+          let upperFilter = filter.cloneNode();
+          upperFilter.textContent = "Below " + formatCurrency(price[1]);
+          id("filter-info").appendChild(upperFilter);
+          url = url + "upperPrice=" + price[1] + "&";
+        }
+      }
+      url = url.substring(0, url.length - 1);
+
+      let items = await fetch(url);
+      await statusCheck(items);
+      items = await items.json();
+      populateBuyItems(items);
+      currFilters = [category, price];
+
+    } catch (err) {
+      handleError();
+    }
+  }
+
+  /**
+   * Gets current selected category setting
+   * @returns {String} - category setting
+   */
+  function getCatFilter() {
+    let categorySelect = qs("#category-setting select");
+    let selected = categorySelect.options[categorySelect.selectedIndex];
+    return [selected.value, selected.textContent];
+  }
+
+  function getPriceFilter() {
+    let options = qsa("#price-setting input");
+    let result = [];
+    for (let i = 0; i < options.length; i++) {
+      let option = options[i];
+      if (option.checked) {
+        if (option.value === "custom") {
+          let lower = id("lower-price").value;
+          let upper = id("upper-price").value;
+
+          if (lower !== "") {
+            result.push(Number(lower));
+          } else {
+            result.push("any");
+          }
+          if (upper !== "") {
+            result.push(Number(upper));
+          } else {
+            result.push("any");
+          }
+        } else {
+          let split = option.value.split("-");
+          result = [split[0], split[2]];
+        }
+      }
+    }
+    return result;
+  }
+
+  function clearFilterPopulate() {
+    resetFilters();
+    filterPopulate();    
+  }
+
+  function resetFilters() {
+    currFilters = null;
+    id("filter-info").classList.add("hidden");
+    qs("#filter-view > form").reset();
+  }
+
+  /**
+   * Populates home page with all yips
+   */
+  async function populateAllItems() {
+    try {
+      let items = await fetch("/listings");
+      await statusCheck(items);
+      items = await items.json();
+      populateBuyItems(items);
+    } catch (err) {
+      handleError();
+    }
+  }
+
+  async function populateBuyItems(items) {
+    if (items.length === 0) {
+      let message = gen("p");
+      message.textContent = "No items found."
+      id("item-display").appendChild(message);
+    } else {
+      for (let i = 0; i < items.length; i++) {
+        let item = items[i];
+        item.category = await getCategoryName(item.category);
+        createCard(item, true);
+      }
+    }
+  }
+
+  async function populateCategories() {
+    try {
+      let cats = await fetch("/category");
+      await statusCheck(cats);
+      cats = await cats.json();
+      for (let i = 0; i < cats.length; i++) {
+        let cat = cats[i];
+        let selectFilter = qs("#category-setting select");
+        let selectList = qs("#category-input select");
+        let option1 = gen('option');
+        option1.value = cat.id;
+        let option2 = option1.cloneNode();
+        option1.textContent = cat.name;
+        option2.textContent = cat.name;
+        selectFilter.appendChild(option1);
+        selectList.appendChild(option2);
+      }
+    } catch (err) {
+      handleError();
+    }
+  }
+
+  /**
    * Creates product card
    * @param {Object} item - item JSON object info
    */
   function createCard(item, isMain) {
     let card = gen("div");
-    let thumb = genProductImg(item);
+    let image = genProductImg(item);
     let itemInfo = genProductInfo(item);
-    card.appendChild(thumb);
+    card.appendChild(image);
     card.appendChild(itemInfo);
     if (isMain) {
       card = applyCurrSettings(card, item);
@@ -234,20 +343,19 @@
       id("listed-item-display").appendChild(card);
       // create/add edit button
     }
-    
   }
 
   /**
-   * Creates product thumbnail element
+   * Creates product image element
    * @param {Object} item - item JSON object info
-   * @returns {Element} - thumbnail element
+   * @returns {Element} - image element
    */
   function genProductImg(item) {
-    let thumb = gen("img");
-    thumb.classList.add("product-thumb");
-    thumb.src = item.thumb;
-    thumb.alt = item.productName;
-    return thumb;
+    let image = gen("img");
+    image.classList.add("product-thumb");
+    image.src = item.image;
+    image.alt = item.title;
+    return image;
   }
 
   /**
@@ -267,9 +375,10 @@
     subInfo.classList.add("item-subinfo");
     price.classList.add("price-tag");
     category.classList.add("category-tag");
+    category.classList.add("sub-text");
     description.classList.add("item-description");
 
-    productName.textContent = item.productName;
+    productName.textContent = item.title;
     price.textContent = formatCurrency(item.price);
     category.textContent = item.category;
     description.textContent = item.description;
@@ -281,6 +390,17 @@
     subInfo.appendChild(category);
 
     return itemInfo;
+  }
+
+  async function getCategoryName(id) {
+    try {
+      let name = await fetch("/category?id=" + id);
+      await statusCheck(name);
+      name = await name.text();
+      return name;
+    } catch (err) {
+      handleError();
+    }
   }
 
   /**
@@ -295,10 +415,6 @@
       card.classList.add("tile");
     } else {
       card.classList.add("row");
-    }
-    let catSetting = getCatSetting();
-    if (catSetting !== "all" && catSetting !== item.category.toLowerCase()) {
-      card.classList.add("hidden");
     }
     return card;
   }
@@ -354,34 +470,23 @@
     }
   }
 
-  /** 
-   * On cataegory change updates items displayed to align with what category is selected 
-   * TODO: INSTEAD REFETCH ITEMS FROM API
+  /**
+   * Displays error view, hides other views, disables buttons and search bar within navigation bar
    */
-  function changeCategory() {
-    let category = getCatSetting();
-    let cards = qsa(".card");
-    for (let i = 0; i < cards.length; i++) {
-      let card = cards[i];
-
-      // instead get from database when working? or diff way to store category tag?
-      // INTSRUCTOR: a good way to change the items based on the selected category would be filtering on that category when you retrieve items to display--this is required feature 5 (search)!
-      let productCategory = qs(".category-tag", card).textContent.toLowerCase();
-      if (productCategory === category || category === "all") {
-        card.classList.remove("hidden");
-      } else {
-        card.classList.add("hidden");
-      }
-    }
+  function handleError() {
+    console.log("Oh, error!")
   }
 
   /**
-   * Gets current selected category setting
-   * @returns {String} - category setting
+   * Checks if the given API reponse's status is OK.
+   * Throws error if not OK and doesn't return the response - took from Lecture 14 slides
+   * @param {Promise} response - API response (if response is ok)
    */
-  function getCatSetting() {
-    let categorySelect = qs("#category-setting select");
-    return categorySelect.options[categorySelect.selectedIndex].value;
+  async function statusCheck(response) {
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    return response;
   }
 
   /**

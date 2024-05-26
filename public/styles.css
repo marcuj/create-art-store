@@ -9,11 +9,17 @@
 body {
   background-color: #ffffff;
   color: #000000;
-  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   margin: 0px
 }
 
-main {
+body, input, button, option {
+  font-family: "Rubik", sans-serif;
+}
+
+main, #filter-info {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -51,7 +57,7 @@ footer {
 }
 
 #buy-view, #product-view {
-  max-width: 65%;
+  width: 65%;
 }
 
 #sell-view {
@@ -62,12 +68,17 @@ max-width: 58%;
   text-align: center;
 }
 
+.sub-text {
+  color: #00000091;
+}
+
 header {
   box-shadow: #00000034 0px 0px 20px;
   background-color: #ffffff;
 }
 
 header h1 {
+  font-family: "Playfair Display", serif;
   font-size: 46px;
   margin-top: 0px;
 }
@@ -93,7 +104,7 @@ input:focus {
   outline: none;
 }
 
-#login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing, #filter-view {
+#login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing, #filter-view, .applied-filter {
   border-radius: 10px;
 }
 
@@ -103,7 +114,7 @@ input:focus {
   background-color: #00000017;
 }
 
-#filter-view > div {
+#filter-view > form > div {
   margin-bottom: 16px;
 }
 
@@ -116,6 +127,17 @@ input:focus {
   flex-direction: row;
   align-items: center;
   height: 30px;
+}
+
+.applied-filter {
+  padding: 8px;
+  margin: 5px;
+  font-size: 16px;
+  background-color: #00000017;
+}
+
+label {
+  margin-left: 6px;
 }
 
 input, button, #display-settings {
@@ -140,7 +162,7 @@ input {
 
 #range-input > input {
   font-size: 14px;
-  width: 40px;
+  width: 50px;
 }
 
 #range-input p {
@@ -304,8 +326,18 @@ button:hover {
   justify-content: space-between;
 }
 
+.card h2 {
+  white-space: nowrap;
+}
+
+.tile h2 {
+  font-size: large;
+}
+
 .card h2, .card p {
   margin: 5px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .tile .item-description {
@@ -327,6 +359,10 @@ button:hover {
 #btn-create-acc, #btn-login, #login-view form > input {
   margin-left: auto;
   margin-right: auto;
+}
+
+#btn-list {
+  width: 100%;
 }
 
 #btn-create-listing {
@@ -396,7 +432,7 @@ button:hover {
 }
 
 #list-form > div > p {
-  width: 120px;
+  width: 130px;
   text-align: right;
 }
 
