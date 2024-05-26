@@ -67,10 +67,40 @@ app.get('/listings', async (req, res) => {
     }
     let ind = sql.lastIndexOf(" ");
     sql = sql.substring(0, ind);
-    let items = await db.all(sql);
+    let items = await db.all(sql, placeholders);
     await db.close();
     res.json(items);
+
+    // user error codes
     
+  } catch (err) {
+    res.type('text');
+    res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
+  }
+});
+
+// Get categories
+app.get('/category', async (req, res) => {
+  try {
+    let id = req.query.id;
+    let db = await getDBConnection();
+
+    if (id) {
+      res.type("text")
+      let sql = "SELECT name FROM categories WHERE id = ?";
+      let name = await db.get(sql, [id]);
+      await db.close();
+      if (!name) {
+        res.status(USER_ERROR).send("Category ID does not exist.");
+      } else {
+        res.send(name.name);
+      }
+    } else {
+      let sql = "SELECT * FROM categories";
+      let cats = await db.all(sql);
+      await db.close();
+      res.json(cats);
+    }
   } catch (err) {
     res.type('text');
     res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');

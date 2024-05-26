@@ -2,6 +2,8 @@
 This API retrieves information on items that are listed, sold, and bought in Create.
 Additionally, the API handles user logins and registration to Create.
 
+NEED ADD CATEGORY ENDPOINT
+
 ## Retrieving Listed Items
 **Endpoint:** `/listings`
 

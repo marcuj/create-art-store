@@ -12,6 +12,7 @@ CREATE TABLE listings (
 	category TEXT REFERENCES categories,
 	username TEXT REFERENCES users,
 	description TEXT,
+	image TEXT,
 	PRIMARY KEY(id AUTOINCREMENT)
 );
 
