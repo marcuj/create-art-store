@@ -9,7 +9,8 @@
 "use strict";
 (function() {
 
-  let loggedIn = true;
+  let loggedIn = false;
+  let currUser = null; // BETTER WAY TO GET THIS INFO ???
   let currSearch = null;
   let currFilters = null;
 
@@ -31,6 +32,9 @@
     id("to-login-form").addEventListener("click", toggleLoginCreateAcc);
     id("to-create-acc-form").addEventListener("click", toggleLoginCreateAcc);
 
+    id("btn-view-profile").addEventListener("click", setProfileView);
+    id("btn-logout").addEventListener("click", userLogout);
+
     id("btn-expand-list").addEventListener("click", toggleExpandList);
     id("btn-create-listing").addEventListener("click", toggleListingForm);
     id("btn-cancel-list").addEventListener("click", toggleListingForm);
@@ -48,13 +52,25 @@
       evt.preventDefault();
       clearFilterPopulate();
     });
+
+    id("btn-login").addEventListener("click", (evt) => {
+      evt.preventDefault();
+      submitLogin();
+    });
+
+    id("btn-item-buy").addEventListener("click", setPurchaseView);
+    id("btn-back-purchase").addEventListener("click", backToProductView);
+    id("btn-confirm-buy").addEventListener("click", userBuyItem);
   }
 
   function hideAllViews() {
     resetItemDisplay();
     resetFilters();
     resetSearch();
+    resetLoginRegister();
     id("list-form").reset();
+    id("profile-view").classList.add("hidden");
+    id("purchase-view").classList.add("hidden");
     id("login-view").classList.add("hidden");
     id("buy-view").classList.add("hidden");
     id("sell-view").classList.add("hidden");
@@ -75,6 +91,7 @@
   function toggleLoginCreateAcc() {
     id("create-account-form").classList.toggle("hidden");
     id("login-form").classList.toggle("hidden");
+    resetLoginRegister();
   }
 
   /** Disables other views and refetches items, acts as "refresh" of items */
@@ -114,10 +131,231 @@
     id("product-view").classList.add("hidden");
   }
 
+  function backToProductView() {
+    id("product-view").classList.remove("hidden");
+    id("purchase-view").classList.add("hidden");
+    qs("#purchase-view .item-title").textContent = "";
+    qs("#purchase-view .price-tag").textContent = "";
+  }
+
+  function setPurchaseView() {
+    id("product-view").classList.add("hidden");
+    id("purchase-view").classList.remove("hidden");
+    qs("#purchase-view .success").classList.add("hidden");
+    qs("#purchase-view .incorrect").classList.add("hidden");
+    qs("#purchase-view .item-title").textContent = "Item: " + qs("#product-view .item-title").textContent;
+    qs("#purchase-view .price-tag").textContent = "Price: " + qs("#product-view .price-tag").textContent;
+  }
+
+  function setProfileView() {
+    hideAllViews();
+    id("profile-view").classList.remove("hidden");
+    qs("#profile-view h2").textContent = "Hello, " + currUser;
+    populateTransactions();
+  }
+
   /** Deletes products on display */
   function resetItemDisplay() {
     id("item-display").innerHTML = "";
     id("listed-item-display").innerHTML = "";
+  }
+
+  function resetLoginRegister() {
+    qs("#login-form .missing").classList.add("hidden");
+    qs("#login-form .incorrect").classList.add("hidden");
+    qs("#login-form .success").classList.add("hidden");
+    qs("#create-account-form .missing").classList.add("hidden");
+    qs("#login-form > form").reset();
+    qs("#create-account-form > form").reset();
+  }
+
+  function toggleLoginProfileBtns() {
+    id("btn-view-login").classList.toggle("hidden");
+    id("btn-view-profile").classList.toggle("hidden");
+  }
+
+  async function fetchItemByID(id) {
+    let item = await fetch("/listings?id=" + id);
+    await statusCheck(item);
+    item = await item.json();
+    return item[0];
+  }
+
+  async function populateTransactions() {
+    try {
+      let transactions = await fetch("/transactions?buyerUser=" + currUser);
+      await statusCheck(transactions);
+      transactions = await transactions.json();
+      for (let i = 0; i < transactions.length; i++) {
+        createTransactionCard(transactions[i]);
+      }
+      /**
+      if (listedItems.length > 0) {
+        qs("#logged-in-view > p").classList.add("hidden");
+        for (let i = 0; i < listedItems.length; i++) {
+          createCard(listedItems[i], false);
+        }
+        if (listedItems.length > 3) {
+          id("btn-expand-list").classList.remove("hidden");
+        } else {
+          id("btn-expand-list").classList.add("hidden");
+        }
+      } else {
+        let message = gen("p");
+        message.textContent = "No items listed."
+        id("listed-item-display").appendChild(message);
+      }
+      */
+    } catch (err) {
+      console.log(err);
+handleError();
+    }
+  }
+
+  async function createTransactionCard(transaction) {
+    try {
+      let item = await fetchItemByID(transaction.listingID);
+      let card = gen("div");
+      card.classList.add("card");
+      let image = genProductImg(item);
+      card.appendChild(image);
+      let info = genTransactionInfo(transaction, item);
+      card.appendChild(info);
+      id("transaction-display").appendChild(card);
+    } catch (err) {
+      console.log(err);
+      handleError()
+    }
+  }
+
+  function genTransactionInfo(transaction, item) {
+    let itemInfo = gen("section");
+    let productName = gen("h2");
+    let subInfo = gen("section");
+    let price = gen("p");
+    let category = gen("p");
+    let description = gen("p");
+
+    itemInfo.classList.add("item-info");
+    subInfo.classList.add("item-subinfo");
+    price.classList.add("price-tag");
+    category.classList.add("category-tag");
+    description.classList.add("item-description");
+
+    productName.textContent = item.title;
+    price.textContent = formatCurrency(item.price);
+    category.textContent = item.category;
+    description.textContent = item.description;
+
+    itemInfo.appendChild(productName);
+    itemInfo.appendChild(subInfo);
+    itemInfo.appendChild(description);
+    subInfo.appendChild(price);
+    subInfo.appendChild(category);
+
+    return itemInfo;
+  }
+
+  function userLogout() {
+    setBuyView();
+    toggleLoginProfileBtns();
+    currUser = null;
+    loggedIn = false;
+  }
+
+  async function userBuyItem() {
+    try {
+      setPurchaseBtnState(true);
+      setHeaderBtnState(true);
+
+      let idTag = qs("#product-view .id-tag").textContent;
+      let id = idTag.substring(idTag.indexOf(":") + 2);
+      
+      let item = await fetchItemByID(id);
+
+      let params = new FormData();
+      params.append("listingID", id);
+      params.append("sellerUser", item.username);
+      params.append("buyerUser", currUser);
+      params.append("cost", item.price);
+      let buy = await fetch("/transactions/add", {method: "POST", body: params});
+      await statusCheck(buy);
+      let stock = await buy.text();
+      qs("#purchase-view .success").classList.remove("hidden");
+      qs("#product-view .item-stock").textContent = "(" + stock + " available)";
+      
+      setTimeout(function() {
+        backToProductView();
+        setPurchaseBtnState(false);
+        setHeaderBtnState(false);
+      }, 2000);
+    } catch (err) {
+      console.log(err);
+
+      qs("#purchase-view .incorrect").classList.remove("hidden");
+      setPurchaseBtnState(false);
+      setHeaderBtnState(false);
+      
+      console.log(err);
+handleError();
+    }
+  }
+
+  async function submitLogin() {
+    try {
+      qs("#login-form .missing").classList.add("hidden");
+      qs("#login-form .incorrect").classList.add("hidden");
+      qs("#login-form .success").classList.add("hidden");
+      let params = new FormData(qs("#login-form > form"));
+      
+      if (!params.get("username") || !params.get("password")) {
+        qs("#login-form .missing").classList.remove("hidden");
+      } else {
+        setLoginBtnState(true);
+        setHeaderBtnState(true);
+
+        let login = await fetch("/login", {method: "POST", body: params});
+        await statusCheck(login);
+        let user = await login.text();
+        qs("#login-form .success").classList.remove("hidden");
+        
+        console.log(user);
+        loggedIn = true;
+        currUser = user;
+
+        setTimeout(function() {
+          setBuyView();
+          setLoginBtnState(false);
+          setHeaderBtnState(false);
+          toggleLoginProfileBtns();
+        }, 1000);
+      }
+    } catch (err) {
+      qs("#login-form .incorrect").classList.remove("hidden");
+      setLoginBtnState(false);
+      setHeaderBtnState(false);
+      console.log(err);
+handleError();
+    }
+  }
+
+  function setLoginBtnState(isOff) {
+    id("btn-login").disabled = isOff;
+    id("to-create-acc-form").disabled = isOff;
+    id("btn-create-acc").disabled = isOff;
+    id("to-login-form").disabled = isOff;
+  }
+
+  function setHeaderBtnState(isOff) {
+    id("btn-view-login").disabled = isOff;
+    id("btn-view-profile").disabled = isOff;
+    id("btn-buy").disabled = isOff;
+    id("btn-sell").disabled = isOff;
+  }
+
+  function setPurchaseBtnState(isOff) {
+    id("btn-confirm-buy").disabled = isOff;
+    id("btn-back-purchase").disabled = isOff;
   }
 
   function populateSellItems() {
@@ -139,7 +377,7 @@
         }
       } else {
         let message = gen("p");
-        message.textContent = "No items for sale."
+        message.textContent = "No items listed."
         id("listed-item-display").appendChild(message);
       }
     } else {
@@ -160,7 +398,8 @@
       currSearch = id("search-inp").value.trim();
       await populateItems();
     } catch (err) {
-      handleError();
+      console.log(err);
+handleError();
     }
   }
 
@@ -177,7 +416,8 @@
       currFilters = [getCatFilter()[0], getPriceFilter()];
       await populateItems();
     } catch (err) {
-      handleError();
+      console.log(err);
+handleError();
     }
   }
 
@@ -202,7 +442,9 @@
       items = await items.json();
       addItemCards(items);
     } catch (err) {
-      handleError();
+      
+      console.log(err);
+handleError();
     }
   }
 
@@ -212,10 +454,6 @@
       id("filter-info").innerHTML = "";
     
       let url = "/listings?";
-
-      let category = currFilters[0];
-      let price = currFilters[1];
-
       let filter = gen("p");
       filter.classList.add("applied-filter");
       
@@ -226,29 +464,32 @@
         id("filter-info").appendChild(searchFilter);
         url = url + "search=" + currSearch + "&";
       }
-
-      if (category === "all" && price[0] === "any" && price[1] === "any") {
-        id("filter-info").classList.add("hidden");
-      } else {
-        id("filter-info").classList.remove("hidden");
-        
-        if (category !== "all") {
-          let catFilter = filter.cloneNode();
-          catFilter.textContent = getCatFilter()[1];
-          id("filter-info").appendChild(catFilter);
-          url = url + "category=" + category + "&";
-        }
-        if (price[0] !== "any") {
-          let lowFilter = filter.cloneNode();
-          lowFilter.textContent = "Above " + formatCurrency(price[0]);
-          id("filter-info").appendChild(lowFilter);
-          url = url + "lowerPrice=" + price[0] + "&";
-        }
-        if (price[1] !== "any") {
-          let upperFilter = filter.cloneNode();
-          upperFilter.textContent = "Below " + formatCurrency(price[1]);
-          id("filter-info").appendChild(upperFilter);
-          url = url + "upperPrice=" + price[1] + "&";
+      if (currFilters) {
+        let category = currFilters[0];
+        let price = currFilters[1];
+        if (category === "all" && price[0] === "any" && price[1] === "any") {
+          id("filter-info").classList.add("hidden");
+        } else {
+          id("filter-info").classList.remove("hidden");
+          
+          if (category !== "all") {
+            let catFilter = filter.cloneNode();
+            catFilter.textContent = getCatFilter()[1];
+            id("filter-info").appendChild(catFilter);
+            url = url + "category=" + category + "&";
+          }
+          if (price[0] !== "any") {
+            let lowFilter = filter.cloneNode();
+            lowFilter.textContent = "Above " + formatCurrency(price[0]);
+            id("filter-info").appendChild(lowFilter);
+            url = url + "lowerPrice=" + price[0] + "&";
+          }
+          if (price[1] !== "any") {
+            let upperFilter = filter.cloneNode();
+            upperFilter.textContent = "Below " + formatCurrency(price[1]);
+            id("filter-info").appendChild(upperFilter);
+            url = url + "upperPrice=" + price[1] + "&";
+          }
         }
       }
       url = url.substring(0, url.length - 1);
@@ -260,7 +501,7 @@
       currFilters = [category, price];
 
     } catch (err) {
-      handleError();
+      
     }
   }
 
@@ -325,7 +566,7 @@
       for (let i = 0; i < cats.length; i++) {
         let cat = cats[i];
         let selectFilter = qs("#category-setting select");
-        let selectList = qs("#category-input select");
+        let selectList = qs("#category-input");
         let option1 = gen('option');
         option1.value = cat.id;
         let option2 = option1.cloneNode();
@@ -335,7 +576,8 @@
         selectList.appendChild(option2);
       }
     } catch (err) {
-      handleError();
+      console.log(err);
+handleError();
     }
   }
 
@@ -413,7 +655,8 @@
       name = await name.text();
       return name;
     } catch (err) {
-      handleError();
+      console.log(err);
+handleError();
     }
   }
 
@@ -465,13 +708,24 @@
       qs("#product-view .price-tag").textContent = formatCurrency(item.price);
       qs("#product-view .item-description").textContent = item.description;
       qs("#product-view .item-stock").textContent = "(" + item.stock + " available)";
+      qs("#product-view .user-tag").textContent = "Sold by: " + item.username;
+      qs("#product-view .id-tag").textContent = "ID: " + itemID;
+
+      if (loggedIn) {
+        qs("#product-view .log-in-warning").classList.add("hidden");
+        id("btn-item-buy").disabled = false;
+      } else {
+        qs("#product-view .log-in-warning").classList.remove("hidden");
+        id("btn-item-buy").disabled = true;
+      }
 
       removeFilterView();
       id("buy-view").classList.add("hidden");
       id("product-view").classList.remove("hidden");
     } catch (err) {
       console.log(err);
-      handleError();
+      console.log(err);
+handleError();
     }
   }
 

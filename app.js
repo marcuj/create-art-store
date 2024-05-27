@@ -123,7 +123,7 @@ app.get('/transactions', async (req, res) => {
     let db = await getDBConnection();
 
     let sql = "SELECT name, yip, hashtag, date FROM yips WHERE " +
-      "name = ? ORDER BY DATETIME(date) DESC";
+      "name = ? ORDER BY DATETIME(date) DESC"; // ORDER BY DATE YES!
     let yips = await db.all(sql, [user]);
     await db.close();
     if (!yips) {
@@ -172,26 +172,36 @@ app.post('/listings/add', async (req, res) => {
 // Adds transaction
 app.post('/transactions/add', async (req, res) => {
   try {
+    res.type("text");
     let listingID = req.body.listingID;
     let cost = req.body.cost;
     let sellerUser = req.body.sellerUser;
     let buyerUser = req.body.buyerUser;
 
     let db = await getDBConnection();
-    let sqlCheck = "SELECT name FROM yips WHERE name = ? LIMIT 1";
-    let nameExists = await db.get(sqlCheck, [name]);
+    let sqlListingCheck = "SELECT stock FROM listings WHERE id = ? AND username = ? LIMIT 1";
+    let listingExists = await db.get(sqlListingCheck, [listingID, sellerUser]);
+    let sqlUserCheck = "SELECT username FROM users WHERE username = ? LIMIT 1";
+    let userExists = await db.get(sqlUserCheck, [buyerUser]);
 
-    if (nameExists) {
-      let sqlInsert = "INSERT INTO yips(name, yip, hashtag, likes) VALUES(?, ?, ?, 0)";
-      let data = await db.run(sqlInsert, [name, yip, hashtag]);
-      let sqlGet = "SELECT * FROM yips WHERE id = ?";
-      let row = await db.get(sqlGet, [data.lastID]);
+    if (!listingExists) {
       await db.close();
-      res.json(row);
+      res.status(USER_ERROR).send("Listing ID does not exist.");
+    } else if (!userExists) {
+      await db.close();
+      res.status(USER_ERROR).send("Invalid buyer username.");
+    } else if (listingExists.stock === 0) {
+      await db.close();
+      res.status(API_ERROR).send("Item out of stock.")
     } else {
+      let sqlInsert = "INSERT INTO transactions(listingID, sellerUser, buyerUser, cost) VALUES(?, ?, ?, ?)";
+      await db.run(sqlInsert, [listingID, sellerUser, buyerUser, cost]);
+      let sqlLowerStock = "UPDATE listings SET stock = stock - 1 WHERE id = ?";
+      await db.run(sqlLowerStock, [listingID]);
+      let sqlGetStock = "SELECT stock FROM listings WHERE id = ?";
+      let stock = await db.get(sqlGetStock, [listingID]);
       await db.close();
-      res.type("text").status(USER_ERROR)
-        .send("Yikes. User does not exist.");
+      res.send(stock.stock + "");
     }
   } catch (err) {
     res.type('text').status(API_ERROR)
@@ -202,27 +212,26 @@ app.post('/transactions/add', async (req, res) => {
 // Verifies user log in credentials
 app.post('/login', async (req, res) => {
   try {
+    res.type("text");
     let username = req.body.username;
     let password = req.body.password;
 
-    let db = await getDBConnection();
-    let sqlCheck = "SELECT name FROM yips WHERE name = ? LIMIT 1";
-    let nameExists = await db.get(sqlCheck, [name]);
-
-    if (nameExists) {
-      let sqlInsert = "INSERT INTO yips(name, yip, hashtag, likes) VALUES(?, ?, ?, 0)";
-      let data = await db.run(sqlInsert, [name, yip, hashtag]);
-      let sqlGet = "SELECT * FROM yips WHERE id = ?";
-      let row = await db.get(sqlGet, [data.lastID]);
-      await db.close();
-      res.json(row);
+    if (!username || !password) {
+      res.status(USER_ERROR).send("Missing required parameters.");
     } else {
+      let db = await getDBConnection();
+      let sql = "SELECT username FROM users WHERE username = ? AND password = ?";
+      let login = await db.get(sql, [username, password]);
       await db.close();
-      res.type("text").status(USER_ERROR)
-        .send("Yikes. User does not exist.");
+
+      if (login) {
+        res.send(login.username);
+      } else {
+        res.status(USER_ERROR).send("Incorrect username or password.");
+      }
     }
   } catch (err) {
-    res.type('text').status(API_ERROR)
+    res.type("text").status(API_ERROR)
       .send('Something went wrong on the server. Please try again later.');
   }
 });
@@ -233,22 +242,6 @@ app.post('/register', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    let db = await getDBConnection();
-    let sqlCheck = "SELECT name FROM yips WHERE name = ? LIMIT 1";
-    let nameExists = await db.get(sqlCheck, [name]);
-
-    if (nameExists) {
-      let sqlInsert = "INSERT INTO yips(name, yip, hashtag, likes) VALUES(?, ?, ?, 0)";
-      let data = await db.run(sqlInsert, [name, yip, hashtag]);
-      let sqlGet = "SELECT * FROM yips WHERE id = ?";
-      let row = await db.get(sqlGet, [data.lastID]);
-      await db.close();
-      res.json(row);
-    } else {
-      await db.close();
-      res.type("text").status(USER_ERROR)
-        .send("Yikes. User does not exist.");
-    }
   } catch (err) {
     res.type('text').status(API_ERROR)
       .send('Something went wrong on the server. Please try again later.');

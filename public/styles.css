@@ -31,7 +31,7 @@ footer {
   text-align: center;
 }
 
-#filter-view, #login-view, #buy-view, #product-view, #sell-view {
+#filter-view, #login-view, #buy-view, #product-view, #sell-view, #purchase-view, #profile-view {
   padding: 20px;
   padding-top: 5px;
   margin-top: 20px;
@@ -40,7 +40,7 @@ footer {
   background-color: #ffffff;
 }
 
-#login-view, #buy-view, #product-view, #sell-view {
+#login-view, #buy-view, #product-view, #sell-view, #purchase-view, #profile-view {
   margin: 20px
 }
 
@@ -56,19 +56,27 @@ footer {
   max-width: 25%;
 }
 
-#buy-view, #product-view {
-  width: 65%;
+#buy-view, #sell-view, #product-view {
+  width: 60%;
 }
 
-#sell-view {
-max-width: 58%;
+#purchase-view {
+  max-width: 30%;
+}
+
+#profile-view {
+  width: 30%;
+}
+
+#btn-confirm-buy {
+  width: 100%;
 }
 
 #sell-view > h2 {
   text-align: center;
 }
 
-.sub-text, .category-tag {
+.sub-text, .category-tag, .id-tag, .user-tag {
   color: #00000091;
 }
 
@@ -81,7 +89,7 @@ max-width: 58%;
   font-size: 26px;
 }
 
-#product-view {
+#product-view, #purchase-view {
   padding-top: 20px;
 }
 
@@ -117,14 +125,19 @@ input:focus {
   outline: none;
 }
 
-#login-view, #buy-view, #product-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing, #filter-view, .applied-filter {
+#login-view, #buy-view, #product-view, #purchase-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing, #filter-view, #profile-view, .applied-filter, .log-in-warning, .missing, .incorrect, .success {
   border-radius: 10px;
 }
 
-#grid-setting {
+#grid-setting, .log-in-warning {
   height: 16px;
   padding: 10px;
   background-color: #00000017;
+}
+
+.log-in-warning {
+  width: 142px;
+  text-align: center;
 }
 
 #filter-view > form > div {
@@ -189,6 +202,9 @@ button {
 }
 
 .top-bar {
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
   margin-bottom: 0px;
   display: flex;
   justify-content: flex-end;
@@ -255,7 +271,7 @@ button:hover {
   background-color: #0000001a;
 }
 
-#item-display, #listed-item-display {
+#item-display, #listed-item-display, #transaction-display {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -289,7 +305,7 @@ button:hover {
   border-bottom-right-radius: 0;
 }
 
-#listed-item-display .card {
+#listed-item-display .card, #transaction-display .card {
   flex-direction: row;
   height: 150px;
   width: 100%;
@@ -315,12 +331,7 @@ button:hover {
   width: 250.4px;
 }
 
-#listed-item-display .card {
-  height: 150px;
-  border: 1px solid #d8d8d8 ;
-}
-
-#listed-item-display .card img {
+#listed-item-display .card img, #transaction-display .card img {
   height: 150px;
   width: 175px;
   border-top-right-radius: 0;
@@ -373,7 +384,27 @@ button:hover {
   text-align: center;
 }
 
-#btn-create-acc, #btn-login, #login-view form > input {
+.missing, .incorrect, .success {
+  padding: 6px;
+}
+
+.missing, .incorrect {
+  color: #6e0000;
+  width: 100%;
+  text-align: center;
+  font-size: larger;
+  background-color: #6e000041;
+}
+
+.success {
+  color: #006e00;
+  width: 100%;
+  text-align: center;
+  font-size: larger;
+  background-color: #006e0041;
+}
+
+#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p {
   margin-left: auto;
   margin-right: auto;
 }
@@ -403,7 +434,7 @@ button:hover {
   width: 100px;
 }
 
-#logged-in-view > div {
+#logged-in-view > div, #transaction-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -413,11 +444,13 @@ button:hover {
   border-bottom: 1px solid #d8d8d8;
 }
 
-#logged-in-view h3 {
+#logged-in-view h3, #transaction-container h3 {
   margin-top: 5px;
+  margin-right: auto;
 }
 
 #create-listing {
+  max-width: 45%;
   background-color: #ffffff;
   padding: 20px;
   border-top-left-radius: 0;
@@ -438,7 +471,7 @@ button:hover {
   margin-right: 20px;
 }
 
-#product-view > div {
+#product-view > div, #purchase-view > div {
   display: flex;
   flex-direction: row;
 }

@@ -109,12 +109,12 @@
         <h2>Sell Products</h2>
 
         <!-- if logged in hide this -->
-        <p class="hidden">Login required.</p>
+        <p class="log-in-warning hidden">Login to sell items</p>
 
         <!-- if not logged in hide below -->
         <div id="logged-in-view">
           <div>
-            <h3>Items you currently have for sale</h3>
+            <h3>Your Listed Items</h3>
             <section id="listed-item-display" class="hide-items"></section>
             <button id="btn-expand-list" class="hidden">Expand</button>
           </div>
@@ -157,7 +157,7 @@
                 <input id="image-input" type="url" name="product-image" placeholder="Enter image URL">
               </div>
 
-              <button id="btn-list" type="submit" name="product-submit">Submit</button>
+              <button id="btn-list" type="submit" name="product-submit">Sell</button>
             </form>
           </section>
         </section>
@@ -167,15 +167,17 @@
         <div>
           <img id="product-image" src="data:," alt="Product image">
           <section class="item-info">
-            <h2></h2>
+            <h2 class="item-title"></h2>
             <p class="category-tag"></p>
             <p class="item-description"></p>
-            
             <p class="price-tag"></p>
+            <p class="log-in-warning">Login to purchase</p>
             <div>
               <button id="btn-item-buy">Buy</button>
               <p class="item-stock"></p>
             </div>
+            <p class="user-tag"></p>
+            <p class="id-tag"></p>
           </section>
           <section class="side-bar">
             <button id="btn-back">X</button>
@@ -183,15 +185,33 @@
         </div>
       </section>
 
-      <!-- Where tf do i put this? in new html ? keep here? how do save login ? -->
+      <section id="purchase-view" class="hidden">
+        <div>
+          <section class="item-info">
+            <h2>Confirm your purchase</h2>
+            <p class="item-title"></p>
+            <p class="price-tag"></p>
+            <button id="btn-confirm-buy">Confirm purchase</button>
+            <p class="incorrect hidden">Transaction failed.</p>
+            <p class="success hidden">Transaction success.</p>
+          </section>
+          <section class="side-bar">
+            <!-- back to product view -->
+            <button id="btn-back-purchase">X</button>
+          </section>
+        </div>
+      </section>
+
       <section id="login-view" class="hidden">
         <div id="login-form">
-          <h2>Log in to your account</h2>
-          <!-- set up post connected to server, https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form -->
-          <form action="" method="post">
-            <input type="text" name="username" placeholder="Username">
-            <input type="text" name="password" placeholder="Password">
-            <button id="btn-login" type="submit" name="login">Log in</button>
+          <h2>Account Login</h2>
+          <form>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <p class="missing hidden">Missing required field.</p>
+            <p class="incorrect hidden">Incorrect username or password.</p>
+            <p class="success hidden">Login success.</p>
+            <button id="btn-login" type="submit" name="login">Login</button>
           </form>
           <div class="swap-login">
             <button id="to-create-acc-form">Don't have an account? Create one.</button>
@@ -200,17 +220,31 @@
         </div>
         
         <div id="create-account-form" class="hidden">
-          <h2>Create a new account</h2>
-          <form action="" method="post">
-            <input type="text" name="username" placeholder="Username">
-            <input type="text" name="password" placeholder="Password">
-            <input type="text" name="confirm-password" placeholder="Confirm password">
+          <h2>Create Account</h2>
+          <form>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm-password" placeholder="Confirm password" required>
+            <p class="missing hidden">Missing required field.</p>
             <button id="btn-create-acc" type="submit" name="create-acc">Create account</button>
           </form>
           <div class="swap-login">
             <button id="to-login-form">Already have an account? Login.</button>
           </div>
           
+        </div>
+      </section>
+
+      <section id="profile-view" class="hidden">
+        <div class="space-bar">
+          <h2>Hello,</h2>
+          <button id="btn-logout">Logout</button>
+        </div>
+        <div id="transaction-container">
+          <h3>Your Purchases</h3>
+          <section id="transaction-display" class="hide-items"></section>
+          <button id="btn-expand-transactions" class="hidden">Expand</button>
+          <p>No previous transactions.</p>
         </div>
       </section>
 
