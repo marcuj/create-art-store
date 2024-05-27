@@ -93,6 +93,10 @@ footer {
   padding-top: 20px;
 }
 
+#purchase-view h2 {
+  margin-top: 0px;
+}
+
 header {
   box-shadow: #00000034 0px 0px 20px;
   background-color: #ffffff;
