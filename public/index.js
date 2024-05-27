@@ -26,6 +26,7 @@
     id("grid-setting").addEventListener("change", changeGrid);
 
     id("btn-buy").addEventListener("click", setBuyView);
+    qs("header h1").addEventListener("click", setBuyView);
     id("btn-sell").addEventListener("click", setSellView);
 
     id("btn-view-login").addEventListener("click", setLoginView);
@@ -61,6 +62,11 @@
     id("btn-item-buy").addEventListener("click", setPurchaseView);
     id("btn-back-purchase").addEventListener("click", backToProductView);
     id("btn-confirm-buy").addEventListener("click", userBuyItem);
+
+    let warnings = qsa(".log-in-warning");
+    for (let i = 0; i < warnings.length; i++) {
+      warnings[i].addEventListener("click", setLoginView);
+    }
   }
 
   function hideAllViews() {

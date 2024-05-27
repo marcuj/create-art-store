@@ -98,10 +98,30 @@ header {
   background-color: #ffffff;
 }
 
-header h1 {
+header h1, header h2 {
   font-family: "Playfair Display", serif;
-  font-size: 46px;
   margin-top: 0px;
+}
+
+header h1 {
+  font-size: 46px;
+  margin-bottom: 2px;
+  width: 160px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+header h1:hover, .log-in-warning:hover {
+  cursor: pointer;
+}
+
+.log-in-warning:hover {
+  color: #00000091;
+}
+
+header h2 {
+  color: #00000098;
+  font-size: 20px;
 }
 
 header {
@@ -252,6 +272,7 @@ button {
 
 button:hover {
   background-color: #0000001a;
+  cursor: pointer;
 }
 
 #search-inp {
@@ -291,6 +312,7 @@ button:hover {
 
 #item-display .card:hover {
   background-color: #0000000a;
+  cursor: pointer;
 }
 
 .row {
