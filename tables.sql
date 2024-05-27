@@ -22,6 +22,7 @@ CREATE TABLE transactions (
 	sellerUser TEXT REFERENCES users,
 	buyerUser TEXT REFERENCES users,
 	cost REAL,
+	date DATETIME DEFAULT (datetime('now','localtime')),
 	PRIMARY KEY(id AUTOINCREMENT)
 );
 
