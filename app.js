@@ -56,7 +56,7 @@ app.get('/listings', async (req, res) => {
 
     if ((id && !idExists) || (username && !userExists) || (category && !catExists)) {
       res.type('text');
-      res.status(USER_ERROR).send('Given parameter does not exist.');
+      res.status(USER_ERROR).send('Given parameter(s) does not exist.');
     } else {
       let sql = createListingSQL(search, upperPrice, lowerPrice, category, username, id);
       let items = await db.all(sql[0], sql[1]);
@@ -76,7 +76,7 @@ app.get('/category', async (req, res) => {
     let db = await getDBConnection();
 
     if (id) {
-      res.type("text")
+      res.type("text");
       let sql = "SELECT name FROM categories WHERE id = ?";
       let name = await db.get(sql, [id]);
       await db.close();
@@ -115,9 +115,10 @@ app.get('/transactions', async (req, res) => {
     let sellerExists = await valueExists(db, "users", "username", sellerUser);
     let idExists = await valueExists(db, "transactions", "id", id);
 
-    if ((id && !idExists) || (listingID && !listingIDExists) || (sellerUser && !sellerExists) || (buyerUser && !buyerExists)) {
+    if ((id && !idExists) || (listingID && !listingIDExists) || (sellerUser && !sellerExists) ||
+      (buyerUser && !buyerExists)) {
       res.type('text');
-      res.status(USER_ERROR).send('Given parameter does not exist.');
+      res.status(USER_ERROR).send('Given parameter(s) does not exist.');
     } else {
       let sql = createTransactionSQL(listingID, sellerUser, buyerUser, id);
       let items = await db.all(sql[0], sql[1]);
@@ -155,9 +156,10 @@ app.post('/listings/add', async (req, res) => {
       let db = await getDBConnection();
       let userExists = await valueExists(db, "users", "username", username);
       if (userExists) {
-        await insertListingStock(db, title, price, category, username, description, image, stock);
+        let lastID = await insertListingStock(db,
+          [title, price, category, username, description, image, stock]);
         await db.close();
-        res.send("Item # " + data.lastID + "listed.");
+        res.send("Item # " + lastID + "listed.");
       } else {
         await db.close();
         res.status(USER_ERROR).send("User does not exist.");
@@ -183,24 +185,19 @@ app.post('/transactions/add', async (req, res) => {
       res.status(USER_ERROR).send("Buyer can't be the seller.");
     } else {
       let db = await getDBConnection();
-      let sqlListingCheck = "SELECT stocks.stock FROM listings, stocks WHERE listings.id = stocks.id AND listings.id = ? AND listings.username = ? LIMIT 1";
-      let listingExists = await db.get(sqlListingCheck, [listingID, sellerUser]);
-      let userExists = await valueExists(db, "users", "username", buyerUser);
-      if (!listingExists) {
+      let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
+      if (!existCheck[0] || !existCheck[1]) {
         await db.close();
-        res.status(USER_ERROR).send("Listing ID does not exist.");
-      } else if (!userExists) {
+        res.status(USER_ERROR).send("Given parameter(s) does not exist.");
+      } else if (existCheck[0].stock === 0) {
         await db.close();
-        res.status(USER_ERROR).send("Invalid buyer username.");
-      } else if (listingExists.stock === 0) {
-        await db.close();
-        res.status(API_ERROR).send("Item out of stock.")
+        res.status(API_ERROR).send("Item out of stock.");
       } else {
         let stock = await insertTransaction(db, listingID, sellerUser, buyerUser, cost);
         await db.close();
         res.send(stock + "");
       }
-    } 
+    }
   } catch (err) {
     res.type('text').status(API_ERROR)
       .send('Something went wrong on the server. Please try again later.');
@@ -292,6 +289,22 @@ async function valueExists(db, table, column, value) {
 }
 
 /**
+ * Checks if the values (listing ID and usernames) exist when adding transaction.
+ * @param {sqlite3.Database} db 
+ * @param {Number} listingID 
+ * @param {String} sellerUser 
+ * @param {String} buyerUser 
+ * @returns {Array} - [listing exists, buyer username exists]
+ */
+async function transactionValuesExists(db, listingID, sellerUser, buyerUser) {
+  let sqlListingCheck = "SELECT stocks.stock FROM listings, stocks WHERE " +
+    "listings.id = stocks.id AND listings.id = ? AND listings.username = ? LIMIT 1";
+  let listingExists = await db.get(sqlListingCheck, [listingID, sellerUser]);
+  let userExists = await valueExists(db, "users", "username", buyerUser);
+  return [listingExists, userExists];
+}
+
+/**
  * Creates the SQL query for getting listings. Parameters are optional
  * @param {String} search - search query
  * @param {Number} upperPrice - upper bound on price
@@ -305,8 +318,7 @@ function createListingSQL(search, upperPrice, lowerPrice, category, username, id
   let sql = "SELECT * FROM listings, stocks WHERE listings.id = stocks.id AND";
   let placeholders = [];
   if (search) {
-    search = "%" + search + "%";
-    placeholders.push(search);
+    placeholders.push("%" + search + "%");
     sql += " title LIKE ? AND";
   }
   if (upperPrice) {
@@ -319,7 +331,7 @@ function createListingSQL(search, upperPrice, lowerPrice, category, username, id
   }
   if (category) {
     placeholders.push(category);
-    sql += " category = ? AND"; 
+    sql += " category = ? AND";
   }
   if (username) {
     placeholders.push(username);
@@ -370,31 +382,23 @@ function createTransactionSQL(listingID, sellerUser, buyerUser, id) {
 /**
  * Inserts listing and the stock to the database.
  * @param {sqlite3.Database} db - database
- * @param {String} title - item title
- * @param {Number} price - item price
- * @param {String} category - item category
- * @param {String} username - seller username
- * @param {String} description - item description
- * @param {String} image - image URL
- * @param {Number} stock - stock value for item
+ * @param {Array} item - item info
+ * @returns {Number} - row ID of inserted listing
  */
-async function insertListingStock(db, title, price, category, username, description, image, stock) {
-  try {
-    let sql = "INSERT INTO listings(title, price, category, username, description, image) VALUES(?, ?, ?, ?, ?, ?)";
-    let data = await db.run(sql, [title, price, category, username, description, image]);
-    let sqlID = "SELECT id FROM listings WHERE rowid = ?";
-    let id = await db.get(sqlID, [data.lastID]);
-    let sqlStock = "INSERT INTO stocks VALUES(?, ?)";
-    await db.run(sqlStock, [id.id, stock]);
-  } catch (err) {
-    res.type('text').status(API_ERROR)
-      .send('Something went wrong on the server. Please try again later.');
-  }
+async function insertListingStock(db, item) {
+  let sql = "INSERT INTO listings(title, price, category, username, description, image) " +
+    "VALUES(?, ?, ?, ?, ?, ?)";
+  let data = await db.run(sql, [item[0], item[1], item[2], item[3], item[4], item[5]]);
+  let sqlID = "SELECT id FROM listings WHERE rowid = ?";
+  let id = await db.get(sqlID, [data.lastID]);
+  let sqlStock = "INSERT INTO stocks VALUES(?, ?)";
+  await db.run(sqlStock, [id.id, item[6]]);
+  return data.lastID;
 }
 
 /**
  * Inserts tranasction into the database and returns the new stock for item bought.
- * @param {sqlite3.Database} db - database 
+ * @param {sqlite3.Database} db - database
  * @param {Number} listingID - listing ID for item bought
  * @param {String} sellerUser - seller of item
  * @param {String} buyerUser - buyer of item
@@ -402,7 +406,8 @@ async function insertListingStock(db, title, price, category, username, descript
  * @returns {Number} - new item stock amount
  */
 async function insertTransaction(db, listingID, sellerUser, buyerUser, cost) {
-  let sqlInsert = "INSERT INTO transactions(listingID, sellerUser, buyerUser, cost) VALUES(?, ?, ?, ?)";
+  let sqlInsert = "INSERT INTO transactions(listingID, sellerUser, buyerUser, cost) " +
+    "VALUES(?, ?, ?, ?)";
   await db.run(sqlInsert, [listingID, sellerUser, buyerUser, cost]);
   let sqlLowerStock = "UPDATE stocks SET stock = stock - 1 WHERE id = ?";
   await db.run(sqlLowerStock, [listingID]);
