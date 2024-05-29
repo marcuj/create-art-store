@@ -3,7 +3,9 @@
   Date: 4/24/2024
   Section: CSE 154 AE
 
-  This is the styles.css page for 
+  This is the styles.css page for the Create wesbite. White background, rounded corners on
+  elements/containers. Consistent header and under is a "floating" main view which shows main
+  interactive content.
 */
 
 body {
@@ -56,8 +58,12 @@ footer {
   max-width: 25%;
 }
 
-#buy-view, #sell-view, #product-view {
+#buy-view, #product-view {
   width: 60%;
+}
+
+#sell-view {
+  width: 40%;
 }
 
 #purchase-view {
@@ -65,7 +71,7 @@ footer {
 }
 
 #profile-view {
-  width: 30%;
+  width: 35%;
 }
 
 #btn-confirm-buy {
@@ -76,8 +82,15 @@ footer {
   text-align: center;
 }
 
-.sub-text, .category-tag, .id-tag, .user-tag {
+.sub-text, .category-tag, .id-tag, .user-tag, .label {
   color: #00000091;
+}
+
+.label {
+  display: inline-block;
+  width: 85px;
+  font-size: small;
+  margin-right: 4px;
 }
 
 .price-tag {
@@ -130,7 +143,8 @@ header h2 {
 
 header {
   text-align: center;
-  padding: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 img {
@@ -300,6 +314,7 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 }
 
 .hide-items {
@@ -311,7 +326,8 @@ button:hover {
   margin-bottom: 10px;
   background-color: #FFFFFF;
   display: flex;
-  border: 1px solid #d8d8d8 ;
+  border: 1px solid #d8d8d8;
+  overflow: hidden;
 }
 
 #item-display .card:hover {
@@ -323,7 +339,6 @@ button:hover {
   flex-direction: row;
   height: 236px;
   width: 100%;
-  min-width: 0;
 }
 
 .row img {
@@ -362,10 +377,15 @@ button:hover {
   width: 175px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+  margin-right: 10px;
 }
 
 .item-info {
-  padding: 10px;
+  margin-top: 10px;
+}
+
+#item-display .item-info {
+  margin: 10px;
 }
 
 .row .item-info {
@@ -374,6 +394,10 @@ button:hover {
 
 .tile .item-info {
   width: calc(100% - 20px);
+}
+
+#listed-item-display .item-info, #transaction-display .item-info {
+  width: calc(100% - 185px);
 }
 
 .tile .item-subinfo {
@@ -390,8 +414,8 @@ button:hover {
 
 .card h2, .card p {
   margin: 5px;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tile .item-description {
@@ -430,7 +454,7 @@ button:hover {
   background-color: #006e0041;
 }
 
-#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p {
+#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p, #login-form label {
   margin-left: auto;
   margin-right: auto;
 }
@@ -440,7 +464,7 @@ button:hover {
 }
 
 #btn-create-listing {
-  margin: 0;
+  margin: 0px;
 }
 
 .swap-login {
@@ -476,7 +500,7 @@ button:hover {
 }
 
 #create-listing {
-  max-width: 45%;
+  width: 70%;
   background-color: #ffffff;
   padding: 20px;
   border-top-left-radius: 0;

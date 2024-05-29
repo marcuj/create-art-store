@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <!--
   Name: Marcus Jundt
-  Date: 4/24/2024
+  Date: 5/28/2024
   Section: CSE 154 AE
 
-  This is the index.html file which
+  This is the index.html file for the Create website for selling and buying art. Users can login,
+  register accounts, view profile and previous transactions, buy items, and list items for sale.
+  Users can also search and filter items to buy.
 -->
 <html lang="en">
   <head>
@@ -29,6 +31,7 @@
         <button id="btn-buy">Buy</button>
         <button id="btn-sell">Sell</button>
       </div>
+      <p class="incorrect hidden"></p>
     </header>
     <main>
       <section id="filter-view" class="hidden">
@@ -98,10 +101,11 @@
           </label>
 
           <button id="btn-filter">&#9776; Filters</button>
-          <div id="filter-info" class="sub-text"></div>
-
+          <div id="filter-info-container">
+            <div id="filter-info" class="sub-text"></div>
+          </div>
         </section>
-        
+        <p class="incorrect hidden"></p>
         <section id="item-display"></section>
       </section>
 
@@ -119,6 +123,8 @@
             <h3>Your Listed Items</h3>
             <section id="listed-item-display" class="hide-items"></section>
             <button id="btn-expand-list" class="hidden">Expand</button>
+            <p class="no-items hidden">No items listed.</p>
+            <p class="incorrect hidden"></p>
           </div>
 
           <button id="btn-create-listing">&#9776; List new item</button>
@@ -130,8 +136,8 @@
             
             <form id="list-form">
               <div>
-                <p>Product name</p>
-                <input id="name-input" type="text" name="product-name" placeholder="Enter name">
+                <p>Product title</p>
+                <input id="title-input" type="text" name="title" placeholder="Enter title">
               </div>
               
               <div>
@@ -143,22 +149,24 @@
               <!-- Make only accept numbers to 2 decimal places -->
               <div>
                 <p>Price (USD)</p>
-                <input id="price-input" type="number" name="product-price" placeholder="Enter price">
+                <input id="price-input" type="number" name="price" placeholder="Enter price">
               </div>
               <div>
                 <p>Description</p>
-                <textarea id="description-input" name="product-description" rows="5" cols="33"></textarea>
+                <textarea id="description-input" name="description" rows="5" cols="33"></textarea>
               </div>
               <!-- Make only accept INTEGER -->
               <div>
                 <p>Stock</p>
-                <input id="stock-input" type="number" name="product-stock" placeholder="Enter stock">
+                <input id="stock-input" type="number" name="stock" placeholder="Enter stock">
               </div>
               <div>
                 <p>Product image</p>
-                <input id="image-input" type="url" name="product-image" placeholder="Enter image URL">
+                <input id="image-input" type="url" name="image" placeholder="Enter image URL">
               </div>
-
+              <p class="missing hidden">Missing required field.</p>
+              <p class="incorrect hidden">Invalid input.</p>
+              <p class="success hidden">Item listed.</p>
               <button id="btn-list" type="submit" name="product-submit">Sell</button>
             </form>
           </section>
@@ -166,6 +174,7 @@
       </section>
 
       <section id="product-view" class="hidden">
+        <p class="incorrect hidden"></p>
         <div>
           <img id="product-image" src="data:," alt="Product image">
           <section class="item-info">
@@ -208,8 +217,11 @@
         <div id="login-form">
           <h2>Account Login</h2>
           <form>
-            <input type="text" name="username" placeholder="Username" required>
+            <input list="prev-username" type="text" name="username" placeholder="Username" required>
+            <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist -->
+            <datalist id="prev-username"></datalist>
             <input type="password" name="password" placeholder="Password" required>
+            <label><input type="checkbox" name="remember-me">Remember me</label>
             <p class="missing hidden">Missing required field.</p>
             <p class="incorrect hidden">Incorrect username or password.</p>
             <p class="success hidden">Login success.</p>
@@ -228,6 +240,9 @@
             <input type="password" name="password" placeholder="Password" required>
             <input type="password" name="confirm-password" placeholder="Confirm password" required>
             <p class="missing hidden">Missing required field.</p>
+            <p class="incorrect hidden">Passwords do not match.</p>
+            <p class="incorrect hidden"></p>
+            <p class="success hidden">Account created.</p>
             <button id="btn-create-acc" type="submit" name="create-acc">Create account</button>
           </form>
           <div class="swap-login">
@@ -247,6 +262,7 @@
           <section id="transaction-display" class="hide-items"></section>
           <button id="btn-expand-transactions" class="hidden">Expand</button>
           <p>No previous transactions.</p>
+          <p class="incorrect hidden"></p>
         </div>
       </section>
 
