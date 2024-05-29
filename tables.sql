@@ -8,12 +8,17 @@ CREATE TABLE listings (
 	id INTEGER,
 	title TEXT,
 	price REAL,
-	stock INTEGER,
 	category TEXT REFERENCES categories,
 	username TEXT REFERENCES users,
 	description TEXT,
 	image TEXT,
 	PRIMARY KEY(id AUTOINCREMENT)
+);
+
+CREATE TABLE stocks (
+	id INTEGER REFERENCES listings,
+	stock INTEGER,
+	PRIMARY KEY(id)
 );
 
 CREATE TABLE transactions (
