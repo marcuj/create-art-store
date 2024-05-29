@@ -1,14 +1,13 @@
 # Create - API Documentation
 This API retrieves information on items that are listed, sold, and bought in Create.
-Additionally, the API handles user logins and registration to Create.
+Additionally, the API handles user logins, registration, buying items, and listing items for sale.
 
-NEED ADD CATEGORY ENDPOINT
 
 ## Retrieving Listed Items
 **Endpoint:** `/listings`
 
 **Description:** Get a list of items listed on Create with optional filtering criteria (described below in params).
-Each item can be filtered by title, price, category, and seller. If no filters, returns all listed items.
+Each item can be filtered by title, price, category, seller, and ID. If no filters, returns all listed items.
 
 **Request Type:** `GET`
 
@@ -21,7 +20,8 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 | upperPrice | Integer (*optional*) <br> The upper limit on price of items, must be integer greater than 0 |
 | lowerPrice | Integer (*optional*) <br> The lower limit on price of items, must be integer greater than 0 |
 | category | String (*optional*) <br> Get items by category, can be category ID or exact category name |
-| username | String (*optional*) <br> Get items by seller username, giving items listed by user with that username
+| username | String (*optional*) <br> Get items by seller username, giving items listed by user with that username |
+| id | Integer (*optional*) <br> Get item by listing ID |
 
 
 **Example Request:** `/listings?search=green&lowerPrice=50&category=painting`
@@ -55,11 +55,43 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Category does not exist" or "Username does not exist"
-- Occurs when given category or seller username does not exist
+`400` error: "Given parameter does not exist."
+- Occurs when given category, username, or listing ID does not exist
 
 
-## Transactions
+## Retrieving Categories
+**Endpoint:** `/category`
+
+**Description:** Get category information by given ID and returns the category display name. Or, returns list of all categories if ID is not specified in the parameters.
+
+**Request Type:** `GET`
+
+**Returned Data Format**: `TEXT` or `JSON`
+
+**Params**:
+|Param|Description|
+|:---|:---|
+| id | Integer (*optional*) <br> Get category by ID |
+
+
+**Example Request:** `/category?id=digital-print`
+
+**Example Response:**
+
+```
+Digital Print
+```
+
+**Error Handling:**
+
+`500` error: "Something went wrong on the server. Please try again later."
+- Occurs when reading database fails
+
+`400` error: "Category ID does not exist."
+- Occurs when given category ID does not exist
+
+
+## Retrieving Transactions
 **Endpoint:** `/transactions`
 
 **Description:** Get a list of transactions completed on Create with optional ability to specify listing ID, seller ID, and buyer ID. Gives date and transaction cost.
@@ -71,26 +103,31 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 **Params**:
 |Param|Description|
 |:---|:---|
+| id | Integer (*optional*) <br> Get transaction by ID |
 | listingID | Integer (*optional*) <br> Get transactions by listing ID |
 | sellerUser | String (*optional*) <br> Get transactions by seller's username |
 | buyerUser | String (*optional*) <br> Get transactions by buyer's username |
 
-**Example Request:** `/transactions?listingID=3&sellerUser=painter34`
+**Example Request:** `/transactions?listingID=2&sellerUser=painter52`
 
 **Example Response:**
 
 ```json
 [{
-    "listingID": 3,
-    "cost": 65.99, 
-    "sellerUser": "painter34",
-    "buyerUser": "buyer1"
+    "id": 1,
+    "listingID": 2,
+    "sellerUser": "painter52",
+    "buyerUser": "painter34",
+    "cost": 50.00, 
+    "date": "2024-05-26 23:04:05"
 },
 {
-    "listingID": 3,
-    "cost": 65.99, 
-    "sellerID": "painter34",
-    "buyerID": "buyer2"
+    "id": 6,
+    "listingID": 2,
+    "sellerUser": "painter52",
+    "buyerUser": "painter10",
+    "cost": 50.00, 
+    "date": "2024-05-28 16:22:50"
 }]
 
 ```
@@ -100,9 +137,28 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Buyer username does not exist" or "Seller username does not exist" or "Listing ID does not exist"
-- Occurs when given buyer username, seller username, or listing ID does not exist
+`400` error: "Given parameter does not exist."
+- Occurs when given buyer username, seller username, transaction ID, or listing ID does not exist
 
+## Retrieving Previous Login
+**Endpoint:** `/storage`
+
+**Description:** Gets cookie storing previous logged in username.
+
+**Request Type:** `GET`
+
+**Returned Data Format**: `TEXT`
+
+**Params:** None
+
+
+**Example Request:** `/storage`
+
+**Example Response:**
+
+```
+painter52
+```
 
 ## Making a Listing
 **Endpoint:** `/listings/add`
@@ -113,7 +169,7 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 
 **Returned Data Format**: `TEXT`
 
-**Params**:
+**Body Params**:
 
 |Param|Description|
 |:---|:---|
@@ -123,13 +179,14 @@ Each item can be filtered by title, price, category, and seller. If no filters, 
 | category | String (*required*) <br> Category of the item being listed |
 | username | Integer (*required*) <br> Username of the user listing the item |
 | description | String (*required*) <br> Description of the item being listed |
+| image | String (*required*) <br> Image URL for the item being listed |
 
-**Example Request:** `/listings/add?title=Green+Bird&price=52.99&stock=5&category=painting&username=painter32&description=Painting+of+green+bird`
+**Example Request:** `/listings/add
 
 **Example Response:**
 
 ```
-Item "Green Bird" is listed for sale.
+Item # 5 listed.
 ```
 
 **Error Handling:**
@@ -140,20 +197,20 @@ Item "Green Bird" is listed for sale.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the six parameters
 
-`400` error: "Username does not exist"
+`400` error: "User does not exist"
 - Occurs when the given seller username does not exist
 
 
 ## Create New Transaction
 **Endpoint:** `/transactions/add`
 
-**Description:** Creates a new transaction associated to the given listing, seller, and buyer.
+**Description:** Creates a new transaction associated to the given listing, seller, and buyer. Returns the updated stock amount for the bought item
 
 **Request Type:** `POST`
 
 **Returned Data Format**: `TEXT`
 
-**Params**:
+**Body Params**:
 |Param|Description|
 |:---|:---|
 | listingID | Integer (*required*) <br> The listing ID of the item being purchased |
@@ -161,12 +218,12 @@ Item "Green Bird" is listed for sale.
 | sellerUser | Integer (*required*) <br> Username of the user who listed the item |
 | buyerUser | Integer (*required*) <br> Username of the user who purchased the item |
 
-**Example Request:** `/transactions/add?listingID=3&cost=59&sellerUser=painter34&buyerID=buyer1`
+**Example Request:** `/transactions/add`
 
 **Example Response:**
 
 ```
-Transaction of item 3 completed.
+5
 ```
 
 **Error Handling:**
@@ -177,33 +234,42 @@ Transaction of item 3 completed.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the four parameters
 
-`400` error: "Buyer username does not exist" or "Seller username does not exist" or "Listing ID does not exist"
-- Occurs when given buyer username, seller username, or listing ID does not exist
+`400` error: "Buyer can't be seller."
+- Occurs when buyer username is seller username
+
+`400` error: "Listing ID does not exist"
+- Occurs when listing ID does not exist
+
+`400` error: "Invalid buyer username."
+- Occurs when buyer username does not exist
+
+`400` error: "Item out of stock."
+- Occurs when item is out of stock
 
 
 ## User Login
 **Endpoint:** `/login`
 
-**Description:** Verifies given credentials to allow a user to login to their store account.
+**Description:** Verifies given credentials to allow a user to login to their store account. Returns username.
 
 **Request Type:** `POST`
 
 **Returned Data Format**: `TEXT`
 
-**Params**:
+**Body Params**:
 |Param|Description|
 |:---|:---|
 | username | String (*required*) <br> Username of user's account |
 | password | String (*required*) <br> Password of account associated to given username |
 
-**Example Request:** Username: mjundt2, Password: cheese
+**Example Request:**
 
-`/login?username=mjundt2&password=cheese`
+`/login`
 
 **Example Response:**
 
 ```
-Login successful.
+painter52
 ```
 
 **Error Handling:**
@@ -211,15 +277,33 @@ Login successful.
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading to database fails
 
-`400` error: "Missing required params"
+`400` error: "Missing required parameters."
 - Occurs when request is missing one of the two parameters
 
-`400` error: "Username is not associated with an existing account"
-- Occurs when given username doesn't have an account
+`400` error: "Incorrect username or password."
+- Occurs when login fails, username doesn't exist or password is incorrect
 
-`400` error: "Incorrect password"
-- Occurs when password is incorrect for the account associated with given username
 
+## Logging Out
+**Endpoint:** `/logout`
+
+**Description:** Clears the cookie that stores the previous username logged in.
+
+**Request Type:** `POST`
+
+**Returned Data Format**: `TEXT`
+
+**Params**: None
+
+**Example Request:**
+
+`/logout`
+
+**Example Response:**
+
+```
+Logout successful.
+```
 
 ## Create New User
 **Endpoint:** `/register`
@@ -230,20 +314,20 @@ Login successful.
 
 **Returned Data Format**: `TEXT`
 
-**Params**:
+**Body Params**:
 |Param|Description|
 |:---|:---|
 | username | String (*required*) <br> Username for user's new account |
 | password | String (*required*) <br> Password of new account |
 
-**Example Request:** Username: mjundt2, Password: cheese
+**Example Request:**
 
-`/transactions?username=mjundt2&password=cheese`
+`/register`
 
 **Example Response:**
 
 ```
-Registration with username "mjundt2" successful.
+Account created.
 ```
 
 **Error Handling:**
@@ -251,8 +335,8 @@ Registration with username "mjundt2" successful.
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading/writing to database fails
 
-`400` error: "Missing required params"
+`400` error: "Missing required parameters."
 - Occurs when request is missing one of the two parameters
 
-`400` error: "Username is already associated with an existing account"
+`400` error: "Username is taken."
 - Occurs when given username already has an account
