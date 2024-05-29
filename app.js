@@ -35,11 +35,6 @@ const USER_ERROR = 400;
 const API_ERROR = 500;
 const PORT_NUM = 8000;
 
-// Gets current website cookies.
-app.get('/storage', (req, res) => {
-  res.type("text").send(req.cookies.user);
-});
-
 /*
  * Gets item listings according to (if they exist in the query) search query,
  * upper/lower bound on price, category, username which listed the item, and listing ID.
@@ -133,6 +128,11 @@ app.get('/transactions', async (req, res) => {
     res.type('text');
     res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
   }
+});
+
+// Gets current website cookies.
+app.get('/storage', (req, res) => {
+  res.type("text").send(req.cookies.user);
 });
 
 /*
@@ -239,10 +239,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Clears the username login cookie.
+// Clears the cookie that stores the previous username logged in.
 app.post('/logout', (req, res) => {
   res.clearCookie("user");
-  res.end();
+  res.type("text").send("Logout successful.");
 });
 
 // Registers the given username with given password.
@@ -260,7 +260,7 @@ app.post('/register', async (req, res) => {
 
       if (userExists) {
         await db.close();
-        res.send("Username is taken.");
+        res.status(USER_ERROR).send("Username is taken.");
       } else {
         let sqlInsert = "INSERT INTO users VALUES(?, ?)";
         await db.run(sqlInsert, [username, password]);
