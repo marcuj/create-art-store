@@ -234,9 +234,6 @@ Item # 5 listed.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the four parameters
 
-`400` error: "Buyer can't be seller."
-- Occurs when buyer username is seller username
-
 `400` error: "Given parameter(s) does not exist"
 - Occurs when listing ID does not exist or buyer username does not exist
 
