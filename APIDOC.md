@@ -55,7 +55,7 @@ Each item can be filtered by title, price, category, seller, and ID. If no filte
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Given parameter does not exist."
+`400` error: "Given parameter(s) does not exist."
 - Occurs when given category, username, or listing ID does not exist
 
 
@@ -137,7 +137,7 @@ Digital Print
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Given parameter does not exist."
+`400` error: "Given parameter(s) does not exist."
 - Occurs when given buyer username, seller username, transaction ID, or listing ID does not exist
 
 ## Retrieving Previous Login
@@ -237,11 +237,8 @@ Item # 5 listed.
 `400` error: "Buyer can't be seller."
 - Occurs when buyer username is seller username
 
-`400` error: "Listing ID does not exist"
-- Occurs when listing ID does not exist
-
-`400` error: "Invalid buyer username."
-- Occurs when buyer username does not exist
+`400` error: "Given parameter(s) does not exist"
+- Occurs when listing ID does not exist or buyer username does not exist
 
 `400` error: "Item out of stock."
 - Occurs when item is out of stock
