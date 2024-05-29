@@ -333,7 +333,7 @@
     let date = genDateEl(label, transaction);
     let seller = genSellerEl(label, transaction);
     let transactionID = genTransactionIDEl(label, transaction);
-    
+
     itemInfo.appendChild(productName);
     itemInfo.appendChild(price);
     itemInfo.appendChild(date);
@@ -552,6 +552,7 @@
   /**
    * Changes the page to reflect that a user is logged in (shows profile button,
    * allows for buying/selling items). Returns to buy view.
+   * @param {String} user - username logged in 
    */
   function activateLogin(user) {
     loggedIn = true;
@@ -621,7 +622,7 @@
     try {
       clearListMessages();
       let params = new FormData(id("list-form"));
-      params.append("username", currUser); 
+      params.append("username", currUser);
       if (
         (!params.get("title") || !params.get("category") || !params.get("stock")) ||
         (!params.get("price") || !params.get("description") || !params.get("image"))
@@ -656,8 +657,7 @@
         await statusCheck(listedItems);
         listedItems = await listedItems.json();
         if (listedItems.length > 0) {
-          id("listed-item-display").classList.add("hide-items");
-          qs("#logged-in-view > div > p").classList.add("hidden");
+          hideSellViewEls();
           for (let i = 0; i < listedItems.length; i++) {
             let item = listedItems[i];
             item.category = await getCategoryName(item.category);
@@ -665,8 +665,6 @@
           }
           if (listedItems.length > 3) {
             id("btn-expand-list").classList.remove("hidden");
-          } else {
-            id("btn-expand-list").classList.add("hidden");
           }
         } else {
           qs("#logged-in-view > div > p").classList.remove("hidden");
@@ -678,6 +676,12 @@
     } catch (err) {
       handleError("#sell-view", err);
     }
+  }
+
+  function hideSellViewEls() {
+    id("listed-item-display").classList.add("hide-items");
+    qs("#logged-in-view > div > p").classList.add("hidden");
+    id("btn-expand-list").classList.add("hidden");
   }
 
   /** Clears "No items" and server error warning messages in the sell view. */
@@ -762,7 +766,7 @@
         url = url + "search=" + currSearch + "&";
       }
       if (currFilters) {
-        url = createFilters(url);
+        url = createFilters(url, filter);
       }
       url = url.substring(0, url.length - 1);
 
@@ -777,11 +781,12 @@
   }
 
   /**
-   * 
-   * @param {*} url 
-   * @returns 
+   * Displays filter elements according to current filters and adds to fetch url for items.
+   * @param {String} url - starting url to fetch items from
+   * @param {Element} filter - base filter element
+   * @returns {String} - final url to fetch items
    */
-  function createFilters(url) {
+  function createFilters(url, filter) {
     let category = currFilters[0];
     let price = currFilters[1];
 
@@ -1013,8 +1018,7 @@
       qs("#product-view .incorrect").classList.add("hidden");
       let item = await fetch("/listings?id=" + itemID);
       await statusCheck(item);
-      item = await item.json();
-      item = item[0];
+      item = (await item.json())[0];
       let imageEl = id("product-image");
       imageEl.src = item.image;
       imageEl.alt = item.title;

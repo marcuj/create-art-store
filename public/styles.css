@@ -113,6 +113,9 @@ footer {
 header {
   box-shadow: #00000034 0px 0px 20px;
   background-color: #ffffff;
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 header h1, header h2 {
@@ -124,8 +127,6 @@ header h1 {
   font-size: 46px;
   margin-bottom: 2px;
   width: 160px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 header h1:hover, .log-in-warning:hover {
@@ -141,12 +142,6 @@ header h2 {
   font-size: 20px;
 }
 
-header {
-  text-align: center;
-  padding-top: 30px;
-  padding-bottom: 30px;
-}
-
 img {
   object-fit: cover;
   overflow: hidden;
@@ -157,6 +152,9 @@ input {
   background-color: #00000017;
   color: #000000;
   border: none;
+  padding: 6px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 input:focus {
@@ -218,12 +216,6 @@ input, button {
   font-size: 18px;
 }
 
-input {
-  padding: 6px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
 #range-input > input {
   font-size: 14px;
   width: 50px;
@@ -233,15 +225,7 @@ input {
   margin: 8px;
 }
 
-button {
-  text-align: center;
-  line-height: 50%;
-  border-style: solid;
-}
-
 .top-bar {
-  margin-left: auto;
-  margin-right: auto;
   width: 60%;
   margin-bottom: 0px;
   display: flex;
@@ -286,6 +270,9 @@ button {
   background-color: #00000009;
   border-color: #00000017;
   border-width: 2px;
+  text-align: center;
+  line-height: 50%;
+  border-style: solid;
 }
 
 button:hover {
@@ -454,7 +441,7 @@ button:hover {
   background-color: #006e0041;
 }
 
-#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p, #login-form label {
+#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p, #login-form label, header h1, .top-bar {
   margin-left: auto;
   margin-right: auto;
 }

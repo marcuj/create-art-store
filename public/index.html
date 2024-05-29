@@ -40,8 +40,7 @@
             <h1>Filters</h1>
             <button id="btn-clear-filter">Clear</button>
           </div>
-        
-        
+
           <div id="category-setting">
             <p><strong>Category</strong></p>
             <select>
@@ -74,14 +73,16 @@
             <div>
               <input id="custom-range" type="radio" name="price" value="custom">
               <label for="custom-range">Custom</label>
-            </div>  
+            </div>
             <div id="range-input">
-              <input id="lower-price" type="number" min="0" step="0.01" name="low" placeholder="Low">
+              <input id="lower-price" type="number" min="0" step="0.01"
+                name="low" placeholder="Low">
               <p>to</p>
-              <input id="upper-price" type="number" min="0" step="0.01" name="high" placeholder="High">
+              <input id="upper-price" type="number" min="0" step="0.01"
+                name="high" placeholder="High">
             </div>
           </div>
-          
+
           <button id="btn-apply-filter">Apply</button>
         </form>
 
@@ -133,13 +134,13 @@
               <h3>Create New Listing</h3>
               <button id="btn-cancel-list" type="reset" form="list-form">X</button>
             </div>
-            
+
             <form id="list-form">
               <div>
                 <p>Product title</p>
                 <input id="title-input" type="text" name="title" placeholder="Enter title">
               </div>
-              
+
               <div>
                 <p>Category</p>
                 <select id="category-input" name="category">
@@ -170,7 +171,7 @@
               <button id="btn-list" type="submit" name="product-submit">Sell</button>
             </form>
           </section>
-        </section>
+        </div>
       </section>
 
       <section id="product-view" class="hidden">
@@ -230,9 +231,9 @@
           <div class="swap-login">
             <button id="to-create-acc-form">Don't have an account? Create one.</button>
           </div>
-          
+
         </div>
-        
+
         <div id="create-account-form" class="hidden">
           <h2>Create Account</h2>
           <form>
@@ -248,7 +249,7 @@
           <div class="swap-login">
             <button id="to-login-form">Already have an account? Login.</button>
           </div>
-          
+
         </div>
       </section>
 
