@@ -180,8 +180,6 @@ app.post('/transactions/add', async (req, res) => {
     let buyerUser = req.body.buyerUser;
     if (!listingID || !cost || !sellerUser || !buyerUser) {
       res.status(USER_ERROR).send("Missing required parameters.");
-    } else if (sellerUser === buyerUser) {
-      res.status(USER_ERROR).send("Buyer can't be the seller.");
     } else {
       let db = await getDBConnection();
       let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
