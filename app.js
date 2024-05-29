@@ -142,27 +142,26 @@ app.get('/storage', (req, res) => {
  */
 app.post('/listings/add', async (req, res) => {
   try {
+    res.type('text')
     let title = req.body.title;
     let price = req.body.price;
     let stock = req.body.stock;
-    let category = req.body.category;
-    let username = req.body.username;
-    let description = req.body.description;
+    let cat = req.body.category;
+    let user = req.body.username;
+    let desc = req.body.description;
     let image = req.body.image;
-    if (!title || !price || !stock || !category || !username || !description || !image) {
-      res.type('text').status(USER_ERROR).send("Missing required parameters.");
+    if (!title || !price || !stock || !cat || !user || !desc || !image) {
+      res.status(USER_ERROR).send("Missing required parameters.");
     } else {
       let db = await getDBConnection();
-      let userExists = await valueExists(db, "users", "username", username);
+      let userExists = await valueExists(db, "users", "username", user);
       if (userExists) {
-        let lastID = await insertListingStock(
-          db, [title, price, category, username, description, image, stock]
-        );
+        let lastID = await insertListingStock(db, [title, price, cat, user, desc, image, stock]);
         await db.close();
-        res.type('text').send("Item # " + lastID + "listed.");
+        res.send("Item # " + lastID + "listed.");
       } else {
         await db.close();
-        res.type('text').status(USER_ERROR).send("User does not exist.");
+        res.status(USER_ERROR).send("User does not exist.");
       }
     }
   } catch (err) {
@@ -174,27 +173,28 @@ app.post('/listings/add', async (req, res) => {
 // Creates transaction for an item for the given users, listing ID, and cost.
 app.post('/transactions/add', async (req, res) => {
   try {
+    res.type('text')
     let listingID = req.body.listingID;
     let cost = req.body.cost;
     let sellerUser = req.body.sellerUser;
     let buyerUser = req.body.buyerUser;
     if (!listingID || !cost || !sellerUser || !buyerUser) {
-      res.type("text").status(USER_ERROR).send("Missing required parameters.");
+      res.status(USER_ERROR).send("Missing required parameters.");
     } else if (sellerUser === buyerUser) {
-      res.type("text").status(USER_ERROR).send("Buyer can't be the seller.");
+      res.status(USER_ERROR).send("Buyer can't be the seller.");
     } else {
       let db = await getDBConnection();
       let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
       if (!existCheck[0] || !existCheck[1]) {
         await db.close();
-        res.type("text").status(USER_ERROR).send("Given parameter(s) does not exist.");
+        res.status(USER_ERROR).send("Given parameter(s) does not exist.");
       } else if (existCheck[0].stock === 0) {
         await db.close();
-        res.type("text").status(API_ERROR).send("Item out of stock.");
+        res.status(API_ERROR).send("Item out of stock.");
       } else {
         let stock = await insertTransaction(db, listingID, sellerUser, buyerUser, cost);
         await db.close();
-        res.type("text").send(stock + "");
+        res.send(stock + "");
       }
     }
   } catch (err) {
