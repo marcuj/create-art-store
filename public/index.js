@@ -552,7 +552,7 @@
   /**
    * Changes the page to reflect that a user is logged in (shows profile button,
    * allows for buying/selling items). Returns to buy view.
-   * @param {String} user - username logged in 
+   * @param {String} user - username logged in
    */
   function activateLogin(user) {
     loggedIn = true;
@@ -678,6 +678,7 @@
     }
   }
 
+  /** Hides elements within the sell view */
   function hideSellViewEls() {
     id("listed-item-display").classList.add("hide-items");
     qs("#logged-in-view > div > p").classList.add("hidden");

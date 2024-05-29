@@ -14,7 +14,7 @@ body {
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  margin: 0px
+  margin: 0px;
 }
 
 body, input, button, option {
@@ -43,7 +43,7 @@ footer {
 }
 
 #login-view, #buy-view, #product-view, #sell-view, #purchase-view, #profile-view {
-  margin: 20px
+  margin: 20px;
 }
 
 #filter-view, #right-column {
@@ -161,7 +161,9 @@ input:focus {
   outline: none;
 }
 
-#login-view, #buy-view, #product-view, #purchase-view, #sell-view, input, button, img, .card, #category-setting, #grid-setting, #create-listing, #filter-view, #profile-view, .applied-filter, .log-in-warning, .missing, .incorrect, .success {
+#login-view, #buy-view, #product-view, #purchase-view, #sell-view, input, button, img, .card,
+#category-setting, #grid-setting, #create-listing, #filter-view, #profile-view, .applied-filter,
+.log-in-warning, .missing, .incorrect, .success {
   border-radius: 10px;
 }
 
@@ -441,7 +443,8 @@ button:hover {
   background-color: #006e0041;
 }
 
-#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p, #login-form label, header h1, .top-bar {
+#btn-create-acc, #btn-login, #login-view form > input, #sell-view > p,
+#login-form label, header h1, .top-bar {
   margin-left: auto;
   margin-right: auto;
 }
