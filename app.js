@@ -142,7 +142,6 @@ app.get('/storage', (req, res) => {
  */
 app.post('/listings/add', async (req, res) => {
   try {
-    res.type('text');
     let title = req.body.title;
     let price = req.body.price;
     let stock = req.body.stock;
@@ -151,18 +150,19 @@ app.post('/listings/add', async (req, res) => {
     let description = req.body.description;
     let image = req.body.image;
     if (!title || !price || !stock || !category || !username || !description || !image) {
-      res.status(USER_ERROR).send("Missing required parameters.");
+      res.type('text').status(USER_ERROR).send("Missing required parameters.");
     } else {
       let db = await getDBConnection();
       let userExists = await valueExists(db, "users", "username", username);
       if (userExists) {
-        let lastID = await insertListingStock(db,
-          [title, price, category, username, description, image, stock]);
+        let lastID = await insertListingStock(
+          db, [title, price, category, username, description, image, stock]
+        );
         await db.close();
-        res.send("Item # " + lastID + "listed.");
+        res.type('text').send("Item # " + lastID + "listed.");
       } else {
         await db.close();
-        res.status(USER_ERROR).send("User does not exist.");
+        res.type('text').status(USER_ERROR).send("User does not exist.");
       }
     }
   } catch (err) {
@@ -174,28 +174,27 @@ app.post('/listings/add', async (req, res) => {
 // Creates transaction for an item for the given users, listing ID, and cost.
 app.post('/transactions/add', async (req, res) => {
   try {
-    res.type("text");
     let listingID = req.body.listingID;
     let cost = req.body.cost;
     let sellerUser = req.body.sellerUser;
     let buyerUser = req.body.buyerUser;
     if (!listingID || !cost || !sellerUser || !buyerUser) {
-      res.status(USER_ERROR).send("Missing required parameters.");
+      res.type("text").status(USER_ERROR).send("Missing required parameters.");
     } else if (sellerUser === buyerUser) {
-      res.status(USER_ERROR).send("Buyer can't be the seller.");
+      res.type("text").status(USER_ERROR).send("Buyer can't be the seller.");
     } else {
       let db = await getDBConnection();
       let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
       if (!existCheck[0] || !existCheck[1]) {
         await db.close();
-        res.status(USER_ERROR).send("Given parameter(s) does not exist.");
+        res.type("text").status(USER_ERROR).send("Given parameter(s) does not exist.");
       } else if (existCheck[0].stock === 0) {
         await db.close();
-        res.status(API_ERROR).send("Item out of stock.");
+        res.type("text").status(API_ERROR).send("Item out of stock.");
       } else {
         let stock = await insertTransaction(db, listingID, sellerUser, buyerUser, cost);
         await db.close();
-        res.send(stock + "");
+        res.type("text").send(stock + "");
       }
     }
   } catch (err) {
@@ -290,10 +289,10 @@ async function valueExists(db, table, column, value) {
 
 /**
  * Checks if the values (listing ID and usernames) exist when adding transaction.
- * @param {sqlite3.Database} db 
- * @param {Number} listingID 
- * @param {String} sellerUser 
- * @param {String} buyerUser 
+ * @param {sqlite3.Database} db - database
+ * @param {Number} listingID - listing ID
+ * @param {String} sellerUser - seller username
+ * @param {String} buyerUser - buyer username
  * @returns {Array} - [listing exists, buyer username exists]
  */
 async function transactionValuesExists(db, listingID, sellerUser, buyerUser) {
