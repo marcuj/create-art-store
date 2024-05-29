@@ -17,6 +17,8 @@
   let currSearch = null;
   let currFilters = null;
 
+  const SEC = 1000;
+
   window.addEventListener("load", init);
 
   /**
@@ -107,7 +109,7 @@
     id("btn-create-listing").classList.remove("no-bottom-radius");
   }
 
-  /** 
+  /**
    * Sets the main view to the login screen. Allows for autocomplete of username if previously
    * logged in.
    */
@@ -136,7 +138,7 @@
     populateAllItems();
   }
 
-  /** 
+  /**
    * Disables other views, sets the sell view. If not logged in, prompts the user to login.
    * If logged in, shows the user the items they have listed on the store, and shows form to
    * list a new item.
@@ -185,8 +187,8 @@
     qs("#purchase-view .price-tag").textContent = "";
   }
 
-  /** 
-   * Shows the confirm purchase menu. 
+  /**
+   * Shows the confirm purchase menu.
    * Shows item information for the specific item that was clicked on to buy.
    */
   function setPurchaseView() {
@@ -194,8 +196,10 @@
     id("purchase-view").classList.remove("hidden");
     qs("#purchase-view .success").classList.add("hidden");
     qs("#purchase-view .incorrect").classList.add("hidden");
-    qs("#purchase-view .item-title").textContent = "Item: " + qs("#product-view .item-title").textContent;
-    qs("#purchase-view .price-tag").textContent = "Price: " + qs("#product-view .price-tag").textContent;
+    qs("#purchase-view .item-title").textContent = "Item: " +
+      qs("#product-view .item-title").textContent;
+    qs("#purchase-view .price-tag").textContent = "Price: " +
+      qs("#product-view .price-tag").textContent;
   }
 
   /** Hides all other view, shows the profile view. Only available if logged in. */
@@ -206,9 +210,9 @@
     populateTransactions();
   }
 
-  /** 
+  /**
    * Deletes the item cards in the menus (buy view, sell view, transactions)
-   * containing item cards. 
+   * containing item cards.
    */
   function resetItemDisplay() {
     id("item-display").innerHTML = "";
@@ -246,7 +250,11 @@
     }
   }
 
-  /** Gets item listing information by the listing ID. */
+  /**
+   * Gets item listing information by the listing ID.
+   * @param {Number} id - listing ID
+   * @returns {Object} - listing information
+   */
   async function fetchItemByID(id) {
     try {
       let item = await fetch("/listings?id=" + id);
@@ -266,7 +274,7 @@
       let transactions = await fetch("/transactions?buyerUser=" + currUser);
       await statusCheck(transactions);
       transactions = await transactions.json();
-      
+
       if (transactions.length > 0) {
         id("transaction-display").classList.add("hide-items");
         qs("#transaction-container > p").classList.add("hidden");
@@ -281,15 +289,15 @@
       } else {
         qs("#transaction-container > p").classList.remove("hidden");
       }
-      
     } catch (err) {
       handleError("#transaction-container", err);
     }
   }
 
-  /** 
+  /**
    * Creates card showing information of a transaction. Shows amount spent, date placed,
    * the user it was purchased from, and the order number.
+   * @param {Object} transaction - transaction information
    */
   async function createTransactionCard(transaction) {
     try {
@@ -315,36 +323,17 @@
    */
   function genTransactionInfo(transaction, item) {
     let itemInfo = gen("section");
-    let productName = gen("h2");
-    let price = gen("p");
-    let date = gen("p");
-    let seller = gen("p");
-    let transactionID = gen("p");
-    let label = gen("span");
-
     itemInfo.classList.add("item-info");
-    price.classList.add("price-tag");
+    let productName = gen("h2");
+    productName.textContent = item.title;
+    let label = gen("span");
     label.classList.add("label");
 
-    let dateLabel = label.cloneNode();
-    dateLabel.textContent = "Order placed ";
-    let priceLabel = label.cloneNode();
-    priceLabel.textContent = "Total ";
-    let sellerLabel = label.cloneNode();
-    sellerLabel.textContent = "Bought from ";
-    let transactionIDLabel = label.cloneNode();
-    transactionIDLabel.textContent = "Order # ";
-
-    productName.textContent = item.title;
-    price.textContent = formatCurrency(transaction.cost);
-    price.prepend(priceLabel);
-    date.textContent = (new Date(transaction.date)).toLocaleString();
-    date.prepend(dateLabel);
-    seller.textContent = transaction.sellerUser;
-    seller.prepend(sellerLabel);
-    transactionID.textContent = transaction.id;
-    transactionID.prepend(transactionIDLabel);
-
+    let price = genPriceEl(label, transaction);
+    let date = genDateEl(label, transaction);
+    let seller = genSellerEl(label, transaction);
+    let transactionID = genTransactionIDEl(label, transaction);
+    
     itemInfo.appendChild(productName);
     itemInfo.appendChild(price);
     itemInfo.appendChild(date);
@@ -352,6 +341,67 @@
     itemInfo.appendChild(transactionID);
 
     return itemInfo;
+  }
+
+  /**
+   * Generates price element for transaction card
+   * @param {Element} label - label base element
+   * @param {Object} transaction - transaction information
+   * @returns {Element} - price element
+   */
+  function genPriceEl(label, transaction) {
+    let price = gen("p");
+    price.classList.add("price-tag");
+    let priceLabel = label.cloneNode();
+    priceLabel.textContent = "Total ";
+    price.textContent = formatCurrency(transaction.cost);
+    price.prepend(priceLabel);
+    return price;
+  }
+
+  /**
+   * Generates date element for transaction card
+   * @param {Element} label - label base element
+   * @param {Object} transaction - transaction information
+   * @returns {Element} - date element
+   */
+  function genDateEl(label, transaction) {
+    let date = gen("p");
+    let dateLabel = label.cloneNode();
+    dateLabel.textContent = "Order placed ";
+    date.textContent = (new Date(transaction.date)).toLocaleString();
+    date.prepend(dateLabel);
+    return date;
+  }
+
+  /**
+   * Generates seller element for transaction card
+   * @param {Element} label - label base element
+   * @param {Object} transaction - transaction information
+   * @returns {Element} - seller element
+   */
+  function genSellerEl(label, transaction) {
+    let seller = gen("p");
+    let sellerLabel = label.cloneNode();
+    sellerLabel.textContent = "Bought from ";
+    seller.textContent = transaction.sellerUser;
+    seller.prepend(sellerLabel);
+    return seller;
+  }
+
+  /**
+   * Generates transaction ID element for transaction card
+   * @param {Element} label - label base element
+   * @param {Object} transaction - transaction information
+   * @returns {Element} - transaction ID element
+   */
+  function genTransactionIDEl(label, transaction) {
+    let transactionID = gen("p");
+    let transactionIDLabel = label.cloneNode();
+    transactionIDLabel.textContent = "Order # ";
+    transactionID.textContent = transaction.id;
+    transactionID.prepend(transactionIDLabel);
+    return transactionID;
   }
 
   /** Logs the user out and un-remembers the user login. */
@@ -369,7 +419,7 @@
     }
   }
 
-  /** 
+  /**
    * Purchases the selected item for the current logged in user. Adds a transaction associated
    * to the user and decrements stock of the item by 1.
    */
@@ -381,7 +431,7 @@
 
       let idTag = qs("#product-view .id-tag").textContent;
       let id = idTag.substring(idTag.indexOf(":") + 2);
-      
+
       let item = await fetchItemByID(id);
 
       let params = new FormData();
@@ -394,12 +444,12 @@
       let stock = await buy.text();
       qs("#purchase-view .success").classList.remove("hidden");
       qs("#product-view .item-stock").textContent = "(" + stock + " available)";
-      
+
       setTimeout(function() {
         backToProductView();
         setPurchaseBtnState(false);
         setHeaderBtnState(false);
-      }, 2000);
+      }, 2 * SEC);
     } catch (err) {
       qs("#purchase-view .incorrect").classList.remove("hidden");
       setPurchaseBtnState(false);
@@ -430,7 +480,7 @@
     qs("#create-account-form .success").classList.add("hidden");
   }
 
-  /** 
+  /**
    * Takes login form and attempts login. If successful saves the login and changes the page to
    * reflect that a user is logged in.
    */
@@ -438,7 +488,7 @@
     try {
       clearLoginMessages();
       let params = new FormData(qs("#login-form > form"));
-      
+
       if (!params.get("username") || !params.get("password")) {
         qs("#login-form .missing").classList.remove("hidden");
       } else {
@@ -451,7 +501,7 @@
         qs("#login-form .success").classList.remove("hidden");
 
         window.localStorage.setItem("prev-user", user);
-        
+
         await activateLogin(user);
       }
     } catch (err) {
@@ -461,7 +511,7 @@
     }
   }
 
-  /** 
+  /**
    * Takes create account form and attempts to register an account.
    * Only successful if username does not already exist and the two passwords match.
    * If successful, logs in the user.
@@ -470,7 +520,6 @@
     try {
       clearRegisterMessages();
       let params = new FormData(qs("#create-account-form > form"));
-      
       if (!params.get("username") || !params.get("password") || !params.get("confirm-password")) {
         qs("#create-account-form .missing").classList.remove("hidden");
       } else if (params.get("password") !== params.get("confirm-password")) {
@@ -478,7 +527,6 @@
       } else {
         setLoginBtnState(true);
         setHeaderBtnState(true);
-
         let register = await fetch("/register", {method: "POST", body: params});
         await statusCheck(register);
         qs("#create-account-form .success").classList.remove("hidden");
@@ -498,16 +546,14 @@
       qsa("#create-account-form .incorrect")[1].textContent = err;
       setLoginBtnState(false);
       setHeaderBtnState(false);
-      console.log(err);
-      handleError();
     }
   }
 
-  /** 
+  /**
    * Changes the page to reflect that a user is logged in (shows profile button,
-   * allows for buying/selling items). Returns to buy view. 
+   * allows for buying/selling items). Returns to buy view.
    */
-  async function activateLogin(user) {
+  function activateLogin(user) {
     loggedIn = true;
     currUser = user;
 
@@ -516,7 +562,7 @@
       setLoginBtnState(false);
       setHeaderBtnState(false);
       toggleLoginProfileBtns();
-    }, 1000);
+    }, SEC);
   }
 
   /**
@@ -567,7 +613,7 @@
     qs("#list-form .success").classList.add("hidden");
   }
 
-  /** 
+  /**
    * Takes in given form information and lists a new item to the store
    * associated to logged in user.
    */
@@ -576,23 +622,22 @@
       clearListMessages();
       let params = new FormData(id("list-form"));
       params.append("username", currUser); 
-      
-      if (!params.get("title") || !params.get("category") || !params.get("stock") || !params.get("price") || !params.get("description") || !params.get("image")) {
+      if (
+        (!params.get("title") || !params.get("category") || !params.get("stock")) ||
+        (!params.get("price") || !params.get("description") || !params.get("image"))
+      ) {
         qs("#list-form .missing").classList.remove("hidden");
       } else {
         setSellBtnState(true);
         setHeaderBtnState(true);
-        
         let list = await fetch("/listings/add", {method: "POST", body: params});
         await statusCheck(list);
-        
         qs("#list-form .success").classList.remove("hidden");
-        
         setTimeout(function() {
           setSellView();
           setSellBtnState(false);
           setHeaderBtnState(false);
-        }, 1000);
+        }, SEC);
       }
     } catch (err) {
       handleError("#list-form", err);
@@ -607,11 +652,9 @@
       if (loggedIn) {
         clearSellItemsMessages();
         id("logged-in-view").classList.remove("hidden");
-        
         let listedItems = await fetch("/listings?username=" + currUser);
         await statusCheck(listedItems);
         listedItems = await listedItems.json();
-
         if (listedItems.length > 0) {
           id("listed-item-display").classList.add("hide-items");
           qs("#logged-in-view > div > p").classList.add("hidden");
@@ -645,7 +688,7 @@
 
   /** Toggles expansion of list of items in the sell view. */
   function toggleExpandList() {
-    id("listed-item-display").classList.toggle("hide-items")
+    id("listed-item-display").classList.toggle("hide-items");
   }
 
   /** Populates items in buy view from search query and filters if applied. */
@@ -678,7 +721,7 @@
   async function clearFilterPopulate() {
     try {
       resetFilters();
-      await filterPopulate(); 
+      await filterPopulate();
     } catch (err) {
       handleError("#buy-view", err);
     }
@@ -707,11 +750,11 @@
       resetItemDisplay();
       qs("#buy-view .incorrect").classList.add("hidden");
       id("filter-info").innerHTML = "";
-    
+
       let url = "/listings?";
       let filter = gen("p");
       filter.classList.add("applied-filter");
-      
+
       if (currSearch) {
         let searchFilter = filter.cloneNode();
         searchFilter.textContent = "Search: " + currSearch;
@@ -719,27 +762,7 @@
         url = url + "search=" + currSearch + "&";
       }
       if (currFilters) {
-        let category = currFilters[0];
-        let price = currFilters[1];
-        
-        if (category !== "all") {
-          let catFilter = filter.cloneNode();
-          catFilter.textContent = getCatFilter()[1];
-          id("filter-info").appendChild(catFilter);
-          url = url + "category=" + category + "&";
-        }
-        if (price[0] !== "any") {
-          let lowFilter = filter.cloneNode();
-          lowFilter.textContent = "Above " + formatCurrency(price[0]);
-          id("filter-info").appendChild(lowFilter);
-          url = url + "lowerPrice=" + price[0] + "&";
-        }
-        if (price[1] !== "any") {
-          let upperFilter = filter.cloneNode();
-          upperFilter.textContent = "Below " + formatCurrency(price[1]);
-          id("filter-info").appendChild(upperFilter);
-          url = url + "upperPrice=" + price[1] + "&";
-        }
+        url = createFilters(url);
       }
       url = url.substring(0, url.length - 1);
 
@@ -751,6 +774,36 @@
     } catch (err) {
       handleError("#buy-view", err);
     }
+  }
+
+  /**
+   * 
+   * @param {*} url 
+   * @returns 
+   */
+  function createFilters(url) {
+    let category = currFilters[0];
+    let price = currFilters[1];
+
+    if (category !== "all") {
+      let catFilter = filter.cloneNode();
+      catFilter.textContent = getCatFilter()[1];
+      id("filter-info").appendChild(catFilter);
+      url = url + "category=" + category + "&";
+    }
+    if (price[0] !== "any") {
+      let lowFilter = filter.cloneNode();
+      lowFilter.textContent = "Above " + formatCurrency(price[0]);
+      id("filter-info").appendChild(lowFilter);
+      url = url + "lowerPrice=" + price[0] + "&";
+    }
+    if (price[1] !== "any") {
+      let upperFilter = filter.cloneNode();
+      upperFilter.textContent = "Below " + formatCurrency(price[1]);
+      id("filter-info").appendChild(upperFilter);
+      url = url + "upperPrice=" + price[1] + "&";
+    }
+    return url;
   }
 
   /**
@@ -804,7 +857,7 @@
     try {
       if (items.length === 0) {
         let message = gen("p");
-        message.textContent = "No items found."
+        message.textContent = "No items found.";
         id("item-display").appendChild(message);
       } else {
         for (let i = 0; i < items.length; i++) {
@@ -953,7 +1006,7 @@
   /**
    * Shows product page of clicked on product. Shows additional information including seller user,
    * current stock, and item ID.
-   * @param {Number} id - item ID
+   * @param {Number} itemID - item ID
    */
   async function showProductPage(itemID) {
     try {
@@ -962,11 +1015,9 @@
       await statusCheck(item);
       item = await item.json();
       item = item[0];
-
       let imageEl = id("product-image");
       imageEl.src = item.image;
       imageEl.alt = item.title;
-
       qs("#product-view h2").textContent = item.title;
       qs("#product-view .category-tag").textContent = await getCategoryName(item.category);
       qs("#product-view .price-tag").textContent = formatCurrency(item.price);
@@ -974,7 +1025,6 @@
       qs("#product-view .item-stock").textContent = "(" + item.stock + " available)";
       qs("#product-view .user-tag").textContent = "Sold by: " + item.username;
       qs("#product-view .id-tag").textContent = "ID: " + itemID;
-
       if (loggedIn) {
         qs("#product-view .log-in-warning").classList.add("hidden");
         id("btn-item-buy").disabled = false;
@@ -982,7 +1032,6 @@
         qs("#product-view .log-in-warning").classList.remove("hidden");
         id("btn-item-buy").disabled = true;
       }
-
       removeFilterView();
       id("buy-view").classList.add("hidden");
       id("product-view").classList.remove("hidden");
@@ -1049,8 +1098,8 @@
 
   /**
    * Query selector shortcut - adapted from CSE 154 Lecture 07 slides
-   * @param {Element} node - HTML element to start query from
    * @param {String} selector - class name to get HTML element
+   * @param {Element} node - HTML element to start query from
    * @return {Element} - HTML element with given selector under given node
    */
   function qs(selector, node = document) {

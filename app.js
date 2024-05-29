@@ -142,7 +142,7 @@ app.get('/storage', (req, res) => {
  */
 app.post('/listings/add', async (req, res) => {
   try {
-    res.type('text')
+    res.type('text');
     let title = req.body.title;
     let price = req.body.price;
     let stock = req.body.stock;
@@ -173,7 +173,7 @@ app.post('/listings/add', async (req, res) => {
 // Creates transaction for an item for the given users, listing ID, and cost.
 app.post('/transactions/add', async (req, res) => {
   try {
-    res.type('text')
+    res.type('text');
     let listingID = req.body.listingID;
     let cost = req.body.cost;
     let sellerUser = req.body.sellerUser;
