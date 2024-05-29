@@ -137,6 +137,9 @@ Digital Print
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
+`400` error: "Must be logged in."
+- Occurs when user is not logged in
+
 `400` error: "Given parameter(s) does not exist."
 - Occurs when given buyer username, seller username, transaction ID, or listing ID does not exist
 
@@ -194,6 +197,9 @@ Item # 5 listed.
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading/writing to database fails
 
+`400` error: "Must be logged in."
+- Occurs when user is not logged in
+
 `400` error: "Missing required params"
 - Occurs when request is missing one of the six parameters
 
@@ -231,8 +237,11 @@ Item # 5 listed.
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading/writing to database fails
 
-`400` error: "Missing required params"
+`400` error: "Missing required parameters."
 - Occurs when request is missing one of the four parameters
+
+`400` error: "Must be logged in."
+- Occurs when user is not logged in
 
 `400` error: "Given parameter(s) does not exist"
 - Occurs when listing ID does not exist or buyer username does not exist

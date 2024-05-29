@@ -103,27 +103,29 @@ app.get('/category', async (req, res) => {
  */
 app.get('/transactions', async (req, res) => {
   try {
-    let id = req.query.id;
-    let listingID = req.query.listingID;
-    let sellerUser = req.query.sellerUser;
-    let buyerUser = req.query.buyerUser;
-
-    let db = await getDBConnection();
-
-    let listingIDExists = await valueExists(db, "listings", "id", listingID);
-    let buyerExists = await valueExists(db, "users", "username", buyerUser);
-    let sellerExists = await valueExists(db, "users", "username", sellerUser);
-    let idExists = await valueExists(db, "transactions", "id", id);
-
-    if ((id && !idExists) || (listingID && !listingIDExists) || (sellerUser && !sellerExists) ||
-      (buyerUser && !buyerExists)) {
-      res.type('text');
-      res.status(USER_ERROR).send('Given parameter(s) does not exist.');
+    if (req.cookies.user) {
+      let id = req.query.id;
+      let listingID = req.query.listingID;
+      let sellerUser = req.query.sellerUser;
+      let buyerUser = req.query.buyerUser;
+      let db = await getDBConnection();
+      let listingIDExists = await valueExists(db, "listings", "id", listingID);
+      let buyerExists = await valueExists(db, "users", "username", buyerUser);
+      let sellerExists = await valueExists(db, "users", "username", sellerUser);
+      let idExists = await valueExists(db, "transactions", "id", id);
+      if ((id && !idExists) || (listingID && !listingIDExists) || (sellerUser && !sellerExists) ||
+        (buyerUser && !buyerExists)) {
+        res.type('text');
+        res.status(USER_ERROR).send('Given parameter(s) does not exist.');
+      } else {
+        let sql = createTransactionSQL(listingID, sellerUser, buyerUser, id);
+        let items = await db.all(sql[0], sql[1]);
+        await db.close();
+        res.json(items);
+      }
     } else {
-      let sql = createTransactionSQL(listingID, sellerUser, buyerUser, id);
-      let items = await db.all(sql[0], sql[1]);
-      await db.close();
-      res.json(items);
+      res.type('text');
+      res.status(USER_ERROR).send('Must be logged in.');
     }
   } catch (err) {
     res.type('text');
@@ -143,26 +145,30 @@ app.get('/storage', (req, res) => {
 app.post('/listings/add', async (req, res) => {
   try {
     res.type('text');
-    let title = req.body.title;
-    let price = req.body.price;
-    let stock = req.body.stock;
-    let cat = req.body.category;
-    let user = req.body.username;
-    let desc = req.body.description;
-    let image = req.body.image;
-    if (!title || !price || !stock || !cat || !user || !desc || !image) {
-      res.status(USER_ERROR).send("Missing required parameters.");
-    } else {
-      let db = await getDBConnection();
-      let userExists = await valueExists(db, "users", "username", user);
-      if (userExists) {
-        let lastID = await insertListingStock(db, [title, price, cat, user, desc, image, stock]);
-        await db.close();
-        res.send("Item # " + lastID + "listed.");
+    if (req.cookies.user) {
+      let title = req.body.title;
+      let price = req.body.price;
+      let stock = req.body.stock;
+      let cat = req.body.category;
+      let user = req.body.username;
+      let desc = req.body.description;
+      let image = req.body.image;
+      if (!title || !price || !stock || !cat || !user || !desc || !image) {
+        res.status(USER_ERROR).send("Missing required parameters.");
       } else {
-        await db.close();
-        res.status(USER_ERROR).send("User does not exist.");
+        let db = await getDBConnection();
+        let userExists = await valueExists(db, "users", "username", user);
+        if (userExists) {
+          let lastID = await insertListingStock(db, [title, price, cat, user, desc, image, stock]);
+          await db.close();
+          res.send("Item # " + lastID + "listed.");
+        } else {
+          await db.close();
+          res.status(USER_ERROR).send("User does not exist.");
+        }
       }
+    } else {
+      res.status(USER_ERROR).send("Must be logged in.");
     }
   } catch (err) {
     res.type('text');
@@ -174,26 +180,30 @@ app.post('/listings/add', async (req, res) => {
 app.post('/transactions/add', async (req, res) => {
   try {
     res.type('text');
-    let listingID = req.body.listingID;
-    let cost = req.body.cost;
-    let sellerUser = req.body.sellerUser;
-    let buyerUser = req.body.buyerUser;
-    if (!listingID || !cost || !sellerUser || !buyerUser) {
-      res.status(USER_ERROR).send("Missing required parameters.");
-    } else {
-      let db = await getDBConnection();
-      let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
-      if (!existCheck[0] || !existCheck[1]) {
-        await db.close();
-        res.status(USER_ERROR).send("Given parameter(s) does not exist.");
-      } else if (existCheck[0].stock === 0) {
-        await db.close();
-        res.status(API_ERROR).send("Item out of stock.");
+    if (req.cookies.user) {
+      let listingID = req.body.listingID;
+      let cost = req.body.cost;
+      let sellerUser = req.body.sellerUser;
+      let buyerUser = req.body.buyerUser;
+      if (!listingID || !cost || !sellerUser || !buyerUser) {
+        res.status(USER_ERROR).send("Missing required parameters.");
       } else {
-        let stock = await insertTransaction(db, listingID, sellerUser, buyerUser, cost);
-        await db.close();
-        res.send(stock + "");
+        let db = await getDBConnection();
+        let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
+        if (!existCheck[0] || !existCheck[1]) {
+          await db.close();
+          res.status(USER_ERROR).send("Given parameter(s) does not exist.");
+        } else if (existCheck[0].stock === 0) {
+          await db.close();
+          res.status(API_ERROR).send("Item out of stock.");
+        } else {
+          let stock = await insertTransaction(db, listingID, sellerUser, buyerUser, cost);
+          await db.close();
+          res.send(stock + "");
+        }
       }
+    } else {
+      res.status(USER_ERROR).send("Must be logged in.");
     }
   } catch (err) {
     res.type('text').status(API_ERROR)
