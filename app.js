@@ -8,7 +8,9 @@
  * functionality for logging in, logging out, registering accounts, and adding new items to the
  * database.
  *
- * This API
+ * The API retrieves information on items that are listed, sold, and bought in Create.
+ * Additionally, the API handles user logins, registration, buying items, and listing
+ * items for sale.
  */
 
 "use strict";
@@ -33,6 +35,7 @@ app.use(multer().none());
 
 const USER_ERROR = 400;
 const API_ERROR = 500;
+const OK = 200;
 const PORT_NUM = 8000;
 
 /*
@@ -61,7 +64,7 @@ app.get('/listings', async (req, res) => {
       let sql = createListingSQL(search, upperPrice, lowerPrice, category, username, id);
       let items = await db.all(sql[0], sql[1]);
       await db.close();
-      res.json(items);
+      res.status(200).json(items);
     }
   } catch (err) {
     res.type('text');
@@ -115,21 +118,20 @@ app.get('/transactions', async (req, res) => {
       let idExists = await valueExists(db, "transactions", "id", id);
       if ((id && !idExists) || (listingID && !listingIDExists) || (sellerUser && !sellerExists) ||
         (buyerUser && !buyerExists)) {
-        res.type('text');
-        res.status(USER_ERROR).send('Given parameter(s) does not exist.');
-      } else {
-        let sql = createTransactionSQL(listingID, sellerUser, buyerUser, id);
-        let items = await db.all(sql[0], sql[1]);
         await db.close();
+        res.type('text').status(USER_ERROR)
+          .send('Given parameter(s) does not exist.');
+      } else {
+        let items = execTransactionSQL(db, listingID, sellerUser, buyerUser, id);
         res.json(items);
       }
     } else {
-      res.type('text');
-      res.status(USER_ERROR).send('Must be logged in.');
+      res.type('text').status(USER_ERROR)
+        .send('Must be logged in.');
     }
   } catch (err) {
-    res.type('text');
-    res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
+    res.type('text').status(API_ERROR)
+      .send('Something went wrong on the server. Please try again later.');
   }
 });
 
@@ -144,7 +146,7 @@ app.get('/storage', (req, res) => {
  */
 app.post('/listings/add', async (req, res) => {
   try {
-    res.type('text');
+    let response = null;
     if (req.cookies.user) {
       let title = req.body.title;
       let price = req.body.price;
@@ -154,57 +156,40 @@ app.post('/listings/add', async (req, res) => {
       let desc = req.body.description;
       let image = req.body.image;
       if (!title || !price || !stock || !cat || !user || !desc || !image) {
-        res.status(USER_ERROR).send("Missing required parameters.");
+        response = [USER_ERROR, "Missing required parameters."];
       } else {
-        let db = await getDBConnection();
-        let userExists = await valueExists(db, "users", "username", user);
-        if (userExists) {
-          let lastID = await insertListingStock(db, [title, price, cat, user, desc, image, stock]);
-          await db.close();
-          res.send("Item # " + lastID + "listed.");
-        } else {
-          await db.close();
-          res.status(USER_ERROR).send("User does not exist.");
-        }
+        response = getListReponse([title, price, cat, user, desc, image, stock]);
       }
     } else {
-      res.status(USER_ERROR).send("Must be logged in.");
+      response = [USER_ERROR, "Must be logged in."];
     }
+    res.type('text').status(response[0])
+      .send(response[1]);
   } catch (err) {
-    res.type('text');
-    res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
+    res.type('text').status(API_ERROR)
+      .send('Something went wrong on the server. Please try again later.');
   }
 });
 
 // Creates transaction for an item for the given users, listing ID, and cost.
 app.post('/transactions/add', async (req, res) => {
   try {
-    res.type('text');
+    let response = null;
     if (req.cookies.user) {
-      let listingID = req.body.listingID;
+      let listID = req.body.listingID;
       let cost = req.body.cost;
       let sellerUser = req.body.sellerUser;
       let buyerUser = req.body.buyerUser;
-      if (!listingID || !cost || !sellerUser || !buyerUser) {
-        res.status(USER_ERROR).send("Missing required parameters.");
+      if (!listID || !cost || !sellerUser || !buyerUser) {
+        response = [USER_ERROR, "Missing required parameters."];
       } else {
-        let db = await getDBConnection();
-        let existCheck = transactionValuesExists(db, listingID, sellerUser, buyerUser);
-        if (!existCheck[0] || !existCheck[1]) {
-          await db.close();
-          res.status(USER_ERROR).send("Given parameter(s) does not exist.");
-        } else if (existCheck[0].stock === 0) {
-          await db.close();
-          res.status(API_ERROR).send("Item out of stock.");
-        } else {
-          let stock = await insertTransaction(db, listingID, sellerUser, buyerUser, cost);
-          await db.close();
-          res.send(stock + "");
-        }
+        response = await getTransactionResponse(listID, sellerUser, buyerUser, cost);
       }
     } else {
-      res.status(USER_ERROR).send("Must be logged in.");
+      response = [USER_ERROR, "Must be logged in."];
     }
+    res.type('text').status(response[0])
+      .send(response[1]);
   } catch (err) {
     res.type('text').status(API_ERROR)
       .send('Something went wrong on the server. Please try again later.');
@@ -277,6 +262,49 @@ app.post('/register', async (req, res) => {
       .send('Something went wrong on the server. Please try again later.');
   }
 });
+
+/**
+ * Gets response for adding listing when logged in and no missing parameters in request
+ * @param {Array} item - [title, price, cat, user, desc, image, stock] of item - array b/c linter
+ * @returns {Array} - [code, message] response to send back
+ */
+async function getListReponse(item) {
+  response = null;
+  let db = await getDBConnection();
+  let userExists = await valueExists(db, "users", "username", item[3]);
+  if (userExists) {
+    let lastID = await insertListingStock(db, [item[3], item[3], item[3],
+        item[3], item[3], item[3], item[3]]);
+    response = [OK, "Item # " + lastID + "listed."];
+  } else {
+    response = [USER_ERROR, "User does not exist."];
+  }
+  await db.close();
+  return response;
+}
+
+/**
+ * Gets response for adding transaction when logged in and no missing parameters in request
+ * @param {Number} listID - listing ID
+ * @param {String} sellerUser - seller username
+ * @param {String} buyerUser - buyer username
+ * @param {Number} cost - transaction cost
+ * @returns {Array} - [code, message] response to send back
+ */
+async function getTransactionResponse(listID, sellerUser, buyerUser, cost) {
+  let response = null;
+  let db = await getDBConnection();
+  let existCheck = await transactionValuesExists(db, listID, sellerUser, buyerUser);
+  if (!existCheck[0] || !existCheck[1]) {
+    response = [USER_ERROR, "Given parameter(s) does not exist."];
+  } else if (existCheck[0].stock === 0) {
+    response = [USER_ERROR, "Item out of stock."];
+  } else {
+    response = [OK, (await insertTransaction(db, listID, sellerUser, buyerUser, cost)) + ""];
+  }
+  await db.close();
+  return response;
+}
 
 /**
  * Checks if value exists in the given table in the given database.
@@ -353,14 +381,15 @@ function createListingSQL(search, upperPrice, lowerPrice, category, username, id
 }
 
 /**
- * Creates SQL query for getting transactions. Parameters are optional.
+ * Executes SQL query for getting transactions. Parameters are optional. Returns transaction list.
+ * @param {sqlite3.Database} db - database 
  * @param {Number} listingID - listing ID
  * @param {String} sellerUser - seller username
  * @param {String} buyerUser - buyer username
  * @param {Number} id - transaction ID
- * @returns {Array} - [SQL query, placeholder values]
+ * @returns {Array} - list of transaction objects
  */
-function createTransactionSQL(listingID, sellerUser, buyerUser, id) {
+async function execTransactionSQL(db, listingID, sellerUser, buyerUser, id) {
   let sql = "SELECT * FROM transactions WHERE";
   let placeholders = [];
 
@@ -383,7 +412,9 @@ function createTransactionSQL(listingID, sellerUser, buyerUser, id) {
   let ind = sql.lastIndexOf(" ");
   sql = sql.substring(0, ind);
   sql += " ORDER BY id DESC";
-  return [sql, placeholders];
+  let items = await db.all(sql, placeholders);
+  await db.close();
+  return items;
 }
 
 /**
