@@ -15,10 +15,10 @@
 
 "use strict";
 
-const express = require('express');
-const multer = require('multer');
-const sqlite3 = require('sqlite3');
-const sqlite = require('sqlite');
+const express = require("express");
+const multer = require("multer");
+const sqlite3 = require("sqlite3");
+const sqlite = require("sqlite");
 const app = express();
 
 const cookieParser = require("cookie-parser");
@@ -42,7 +42,7 @@ const PORT_NUM = 8000;
  * Gets item listings according to (if they exist in the query) search query,
  * upper/lower bound on price, category, username which listed the item, and listing ID.
  */
-app.get('/listings', async (req, res) => {
+app.get("/listings", async (req, res) => {
   try {
     let search = req.query.search;
     let upperPrice = req.query.upperPrice;
@@ -58,8 +58,8 @@ app.get('/listings', async (req, res) => {
     let catExists = await valueExists(db, "categories", "id", category);
 
     if ((id && !idExists) || (username && !userExists) || (category && !catExists)) {
-      res.type('text');
-      res.status(USER_ERROR).send('Given parameter(s) does not exist.');
+      res.type("text");
+      res.status(USER_ERROR).send("Given parameter value(s) does not exist.");
     } else {
       let sql = createListingSQL(search, upperPrice, lowerPrice, category, username, id);
       let items = await db.all(sql[0], sql[1]);
@@ -67,13 +67,13 @@ app.get('/listings', async (req, res) => {
       res.json(items);
     }
   } catch (err) {
-    res.type('text');
-    res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
+    res.type("text");
+    res.status(API_ERROR).send("Something went wrong on the server. Please try again later.");
   }
 });
 
 // Gets all categories or category by given ID in the query parameters.
-app.get('/category', async (req, res) => {
+app.get("/category", async (req, res) => {
   try {
     let id = req.query.id;
     let db = await getDBConnection();
@@ -95,8 +95,8 @@ app.get('/category', async (req, res) => {
       res.json(cats);
     }
   } catch (err) {
-    res.type('text');
-    res.status(API_ERROR).send('Something went wrong on the server. Please try again later.');
+    res.type("text");
+    res.status(API_ERROR).send("Something went wrong on the server. Please try again later.");
   }
 });
 
@@ -104,7 +104,7 @@ app.get('/category', async (req, res) => {
  * Gets transactions according to (if they exist in the query) transaction ID,
  * listing ID, seller username, and buyer username.
  */
-app.get('/transactions', async (req, res) => {
+app.get("/transactions", async (req, res) => {
   try {
     if (req.cookies.user) {
       let id = req.query.id;
@@ -119,24 +119,24 @@ app.get('/transactions', async (req, res) => {
       if ((id && !idExists) || (listingID && !listingIDExists) || (sellerUser && !sellerExists) ||
         (buyerUser && !buyerExists)) {
         await db.close();
-        res.type('text').status(USER_ERROR)
-          .send('Given parameter(s) does not exist.');
+        res.type("text").status(USER_ERROR)
+          .send("Given parameter value(s) does not exist.");
       } else {
         let items = await execTransactionSQL(db, listingID, sellerUser, buyerUser, id);
         res.json(items);
       }
     } else {
-      res.type('text').status(USER_ERROR)
-        .send('Must be logged in.');
+      res.type("text").status(USER_ERROR)
+        .send("Must be logged in.");
     }
   } catch (err) {
-    res.type('text').status(API_ERROR)
-      .send('Something went wrong on the server. Please try again later.');
+    res.type("text").status(API_ERROR)
+      .send("Something went wrong on the server. Please try again later.");
   }
 });
 
 // Gets current website cookies.
-app.get('/storage', (req, res) => {
+app.get("/storage", (req, res) => {
   res.type("text").send(req.cookies.user);
 });
 
@@ -144,7 +144,7 @@ app.get('/storage', (req, res) => {
  * Adds listing to database from given title, price, stock, category, seller username, description,
  * and image.
  */
-app.post('/listings/add', async (req, res) => {
+app.post("/listings/add", async (req, res) => {
   try {
     let response = null;
     if (req.cookies.user) {
@@ -163,16 +163,16 @@ app.post('/listings/add', async (req, res) => {
     } else {
       response = [USER_ERROR, "Must be logged in."];
     }
-    res.type('text').status(response[0])
+    res.type("text").status(response[0])
       .send(response[1]);
   } catch (err) {
-    res.type('text').status(API_ERROR)
-      .send('Something went wrong on the server. Please try again later.');
+    res.type("text").status(API_ERROR)
+      .send("Something went wrong on the server. Please try again later.");
   }
 });
 
 // Creates transaction for an item for the given users, listing ID, and cost.
-app.post('/transactions/add', async (req, res) => {
+app.post("/transactions/add", async (req, res) => {
   try {
     let response = null;
     if (req.cookies.user) {
@@ -188,16 +188,16 @@ app.post('/transactions/add', async (req, res) => {
     } else {
       response = [USER_ERROR, "Must be logged in."];
     }
-    res.type('text').status(response[0])
+    res.type("text").status(response[0])
       .send(response[1]);
   } catch (err) {
-    res.type('text').status(API_ERROR)
-      .send('Something went wrong on the server. Please try again later.');
+    res.type("text").status(API_ERROR)
+      .send("Something went wrong on the server. Please try again later.");
   }
 });
 
 // Verifies user login credentials and remembers the login if the option is checked.
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     res.type("text");
     let username = req.body.username;
@@ -224,18 +224,27 @@ app.post('/login', async (req, res) => {
     }
   } catch (err) {
     res.type("text").status(API_ERROR)
-      .send('Something went wrong on the server. Please try again later.');
+      .send("Something went wrong on the server. Please try again later.");
   }
 });
 
 // Clears the cookie that stores the previous username logged in.
-app.post('/logout', (req, res) => {
-  res.clearCookie("user");
-  res.type("text").send("Logout successful.");
+app.post("/logout", (req, res) => {
+  try {
+    if (req.cookies.user) {
+      res.clearCookie("user");
+      res.type("text").send("Logout successful.");
+    } else {
+      res.type("text").status(USER_ERROR).send("Must be logged in.");
+    }
+  } catch (err) {
+    res.type("text").status(API_ERROR)
+      .send("Something went wrong on the server. Please try again later.");
+  }
 });
 
 // Registers the given username with given password.
-app.post('/register', async (req, res) => {
+app.post("/register", async (req, res) => {
   try {
     res.type("text");
     let username = req.body.username;
@@ -258,8 +267,8 @@ app.post('/register', async (req, res) => {
       }
     }
   } catch (err) {
-    res.type('text').status(API_ERROR)
-      .send('Something went wrong on the server. Please try again later.');
+    res.type("text").status(API_ERROR)
+      .send("Something went wrong on the server. Please try again later.");
   }
 });
 
@@ -272,12 +281,13 @@ async function getListReponse(item) {
   let response = null;
   let db = await getDBConnection();
   let userExists = await valueExists(db, "users", "username", item[3]);
-  if (userExists) {
-    let lastID = await insertListingStock(db, [item[3], item[3], item[3],
-        item[3], item[3], item[3], item[3]]);
-    response = [OK, "Item # " + lastID + "listed."];
+  let catExists = await valueExists(db, "categories", "id", item[2])
+  if (userExists && catExists) {
+    let lastID = await insertListingStock(db, [item[0], item[1], item[2],
+        item[3], item[4], item[5], item[6]]);
+    response = [OK, "Item # " + lastID + " listed."];
   } else {
-    response = [USER_ERROR, "User does not exist."];
+    response = [USER_ERROR, "Given parameter value(s) does not exist."];
   }
   await db.close();
   return response;
@@ -296,7 +306,7 @@ async function getTransactionResponse(listID, sellerUser, buyerUser, cost) {
   let db = await getDBConnection();
   let existCheck = await transactionValuesExists(db, listID, sellerUser, buyerUser);
   if (!existCheck[0] || !existCheck[1]) {
-    response = [USER_ERROR, "Given parameter(s) does not exist."];
+    response = [USER_ERROR, "Given parameter value(s) does not exist."];
   } else if (existCheck[0].stock === 0) {
     response = [USER_ERROR, "Item out of stock."];
   } else {

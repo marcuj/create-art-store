@@ -887,7 +887,7 @@
         let cat = cats[i];
         let selectFilter = qs("#category-setting select");
         let selectList = qs("#category-input");
-        let option1 = gen('option');
+        let option1 = gen("option");
         option1.value = cat.id;
         let option2 = option1.cloneNode();
         option1.textContent = cat.name;

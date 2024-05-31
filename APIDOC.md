@@ -55,8 +55,8 @@ Each item can be filtered by title, price, category, seller, and ID. If no filte
 `500` error: "Something went wrong on the server. Please try again later."
 - Occurs when reading database fails
 
-`400` error: "Given parameter(s) does not exist."
-- Occurs when given category, username, or listing ID does not exist
+`400` error: "Given parameter value(s) does not exist."
+- Occurs when given category, username, or listing ID does not exist in the database
 
 
 ## Retrieving Categories
@@ -88,13 +88,13 @@ Digital Print
 - Occurs when reading database fails
 
 `400` error: "Category ID does not exist."
-- Occurs when given category ID does not exist
+- Occurs when given category ID does not exist in the database
 
 
 ## Retrieving Transactions
 **Endpoint:** `/transactions`
 
-**Description:** Get a list of transactions completed on Create with optional ability to specify listing ID, seller ID, and buyer ID. Gives date and transaction cost.
+**Description:** Get a list of transactions completed on Create with optional ability to specify listing ID, seller ID, and buyer ID. Gives date and transaction cost. A user must be logged in to use this endpoint.
 
 **Request Type:** `GET`
 
@@ -140,8 +140,8 @@ Digital Print
 `400` error: "Must be logged in."
 - Occurs when user is not logged in
 
-`400` error: "Given parameter(s) does not exist."
-- Occurs when given buyer username, seller username, transaction ID, or listing ID does not exist
+`400` error: "Given parameter value(s) does not exist."
+- Occurs when given buyer username, seller username, transaction ID, or listing ID does not exist in the database
 
 ## Retrieving Previous Login
 **Endpoint:** `/storage`
@@ -166,7 +166,7 @@ painter52
 ## Making a Listing
 **Endpoint:** `/listings/add`
 
-**Description:** Adds a listing to the store from the given parameters.
+**Description:** Adds a listing to the store from the given parameters. A user must be logged in to use this endpoint.
 
 **Request Type:** `POST`
 
@@ -203,14 +203,14 @@ Item # 5 listed.
 `400` error: "Missing required params"
 - Occurs when request is missing one of the six parameters
 
-`400` error: "User does not exist"
-- Occurs when the given seller username does not exist
+`400` error: "Given parameter value(s) does not exist."
+- Occurs when the given seller username for category ID does not exist in the database
 
 
 ## Create New Transaction
 **Endpoint:** `/transactions/add`
 
-**Description:** Creates a new transaction associated to the given listing, seller, and buyer. Returns the updated stock amount for the bought item
+**Description:** Creates a new transaction associated to the given listing, seller, and buyer. Returns the updated stock amount for the bought item. A user must be logged in to use this endpoint.
 
 **Request Type:** `POST`
 
@@ -243,8 +243,8 @@ Item # 5 listed.
 `400` error: "Must be logged in."
 - Occurs when user is not logged in
 
-`400` error: "Given parameter(s) does not exist"
-- Occurs when listing ID does not exist or buyer username does not exist
+`400` error: "Given parameter value(s) does not exist"
+- Occurs when listing ID does not exist or buyer username does not exist in the database
 
 `400` error: "Item out of stock."
 - Occurs when item is out of stock
@@ -290,7 +290,7 @@ painter52
 ## Logging Out
 **Endpoint:** `/logout`
 
-**Description:** Clears the cookie that stores the previous username logged in.
+**Description:** Clears the cookie that stores the previous username logged in. A user must be logged in to use this endpoint.
 
 **Request Type:** `POST`
 
@@ -307,6 +307,14 @@ painter52
 ```
 Logout successful.
 ```
+
+**Error Handling:**
+
+`500` error: "Something went wrong on the server. Please try again later."
+- Occurs if clearing the cookie fails
+
+`400` error: "Must be logged in."
+- Occurs when user is not logged in
 
 ## Create New User
 **Endpoint:** `/register`
