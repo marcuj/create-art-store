@@ -64,7 +64,7 @@ app.get('/listings', async (req, res) => {
       let sql = createListingSQL(search, upperPrice, lowerPrice, category, username, id);
       let items = await db.all(sql[0], sql[1]);
       await db.close();
-      res.status(200).json(items);
+      res.json(items);
     }
   } catch (err) {
     res.type('text');
@@ -122,7 +122,7 @@ app.get('/transactions', async (req, res) => {
         res.type('text').status(USER_ERROR)
           .send('Given parameter(s) does not exist.');
       } else {
-        let items = execTransactionSQL(db, listingID, sellerUser, buyerUser, id);
+        let items = await execTransactionSQL(db, listingID, sellerUser, buyerUser, id);
         res.json(items);
       }
     } else {
@@ -158,7 +158,7 @@ app.post('/listings/add', async (req, res) => {
       if (!title || !price || !stock || !cat || !user || !desc || !image) {
         response = [USER_ERROR, "Missing required parameters."];
       } else {
-        response = getListReponse([title, price, cat, user, desc, image, stock]);
+        response = await getListReponse([title, price, cat, user, desc, image, stock]);
       }
     } else {
       response = [USER_ERROR, "Must be logged in."];
@@ -269,7 +269,7 @@ app.post('/register', async (req, res) => {
  * @returns {Array} - [code, message] response to send back
  */
 async function getListReponse(item) {
-  response = null;
+  let response = null;
   let db = await getDBConnection();
   let userExists = await valueExists(db, "users", "username", item[3]);
   if (userExists) {
@@ -382,7 +382,7 @@ function createListingSQL(search, upperPrice, lowerPrice, category, username, id
 
 /**
  * Executes SQL query for getting transactions. Parameters are optional. Returns transaction list.
- * @param {sqlite3.Database} db - database 
+ * @param {sqlite3.Database} db - database
  * @param {Number} listingID - listing ID
  * @param {String} sellerUser - seller username
  * @param {String} buyerUser - buyer username
