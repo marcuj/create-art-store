@@ -235,7 +235,8 @@ app.post("/logout", (req, res) => {
       res.clearCookie("user");
       res.type("text").send("Logout successful.");
     } else {
-      res.type("text").status(USER_ERROR).send("Must be logged in.");
+      res.type("text").status(USER_ERROR)
+        .send("Must be logged in.");
     }
   } catch (err) {
     res.type("text").status(API_ERROR)
@@ -281,7 +282,7 @@ async function getListReponse(item) {
   let response = null;
   let db = await getDBConnection();
   let userExists = await valueExists(db, "users", "username", item[3]);
-  let catExists = await valueExists(db, "categories", "id", item[2])
+  let catExists = await valueExists(db, "categories", "id", item[2]);
   if (userExists && catExists) {
     let lastID = await insertListingStock(db, [item[0], item[1], item[2],
         item[3], item[4], item[5], item[6]]);
