@@ -670,7 +670,7 @@
           qs("#logged-in-view > div > p").classList.remove("hidden");
         }
       } else {
-        qs("#sell-view .no-items").classList.remove("hidden");
+        qs("#sell-view .log-in-warning").classList.remove("hidden");
         id("logged-in-view").classList.add("hidden");
       }
     } catch (err) {
@@ -687,8 +687,9 @@
 
   /** Clears "No items" and server error warning messages in the sell view. */
   function clearSellItemsMessages() {
-    qs("#sell-view .no-items").classList.add("hidden");
+    qs("#sell-view .log-in-warning").classList.add("hidden");
     qs("#sell-view .incorrect").classList.add("hidden");
+    id("btn-expand-list").classList.add("hidden");
   }
 
   /** Toggles expansion of list of items in the sell view. */

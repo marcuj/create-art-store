@@ -300,6 +300,7 @@ button:hover {
 
 #search-inp {
   border-radius: 15px;
+  margin-left: 0px;
 }
 
 #btn-search {
@@ -387,14 +388,17 @@ button:hover {
 
 .item-info {
   margin-top: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 #item-display .item-info {
   margin: 10px;
+  margin-bottom: 18px;
 }
 
 .row .item-info {
-  width: calc(100% - 250.4px);
+  width: calc(60% - 250.4px);
 }
 
 .tile .item-info {
@@ -403,6 +407,11 @@ button:hover {
 
 #listed-item-display .item-info, #transaction-display .item-info {
   width: calc(100% - 185px);
+}
+
+#product-view .item-info {
+  max-width: 60%;
+  margin-right: auto;
 }
 
 .tile .item-subinfo {
