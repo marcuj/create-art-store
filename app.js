@@ -212,11 +212,13 @@ app.post("/login", async (req, res) => {
       await db.close();
 
       if (login) {
+        let date = new Date();
         if (req.body["remember-me"]) {
-          let date = new Date();
+          date.setDate(date.getDate() + 7);
+        } else {
           date.setDate(date.getDate() + 1);
-          res.cookie("user", username, {expires: date});
         }
+        res.cookie("user", username, {expires: date});
         res.send(login.username);
       } else {
         res.status(USER_ERROR).send("Incorrect username or password.");

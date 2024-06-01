@@ -264,6 +264,7 @@ Item # 5 listed.
 |:---|:---|
 | username | String (*required*) <br> Username of user's account |
 | password | String (*required*) <br> Password of account associated to given username |
+| remember-me | Boolean (*optional*) <br> Setting true will have the login remembered for 7 days
 
 **Example Request:**
 
