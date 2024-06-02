@@ -432,7 +432,6 @@
     try {
       clearBuyMessages();
       setPurchaseBtnState(true);
-      setHeaderBtnState(true);
 
       let idTag = qs("#product-view .id-tag").textContent;
       let id = idTag.substring(idTag.indexOf(":") + 2);
@@ -454,12 +453,10 @@
       setTimeout(function() {
         backToProductView();
         setPurchaseBtnState(false);
-        setHeaderBtnState(false);
       }, 2 * SEC);
     } catch (err) {
       qs("#purchase-view .incorrect").classList.remove("hidden");
       setPurchaseBtnState(false);
-      setHeaderBtnState(false);
     }
   }
 
@@ -500,7 +497,6 @@
         qs("#login-form .missing").classList.remove("hidden");
       } else {
         setLoginBtnState(true);
-        setHeaderBtnState(true);
 
         let login = await fetch("/login", {method: "POST", body: params});
         await statusCheck(login);
@@ -514,7 +510,6 @@
     } catch (err) {
       handleError("#login-form", err);
       setLoginBtnState(false);
-      setHeaderBtnState(false);
     }
   }
 
@@ -534,7 +529,6 @@
         qsa("#create-account-form .incorrect")[0].classList.remove("hidden");
       } else {
         setLoginBtnState(true);
-        setHeaderBtnState(true);
         let register = await fetch("/register", {method: "POST", body: params});
         await statusCheck(register);
         qs("#create-account-form .success").classList.remove("hidden");
@@ -553,7 +547,6 @@
       qsa("#create-account-form .incorrect")[1].classList.remove("hidden");
       qsa("#create-account-form .incorrect")[1].textContent = err;
       setLoginBtnState(false);
-      setHeaderBtnState(false);
     }
   }
 
@@ -569,7 +562,6 @@
     setTimeout(function() {
       setBuyView();
       setLoginBtnState(false);
-      setHeaderBtnState(false);
       toggleLoginProfileBtns();
     }, SEC);
   }
@@ -579,6 +571,7 @@
    * @param {Boolean} isOff - true if want buttons turned off, false to turn on
    */
   function setLoginBtnState(isOff) {
+    setHeaderBtnState(isOff);
     id("btn-login").disabled = isOff;
     id("to-create-acc-form").disabled = isOff;
     id("btn-create-acc").disabled = isOff;
@@ -590,6 +583,7 @@
    * @param {Boolean} isOff - true if want buttons turned off, false to turn on
    */
   function setSellBtnState(isOff) {
+    setHeaderBtnState(isOff);
     id("btn-list").disabled = isOff;
     id("btn-cancel-list").disabled = isOff;
     id("btn-create-listing").disabled = isOff;
@@ -611,6 +605,7 @@
    * @param {Boolean} isOff - true if want buttons turned off, false to turn on
    */
   function setPurchaseBtnState(isOff) {
+    setHeaderBtnState(isOff);
     id("btn-confirm-buy").disabled = isOff;
     id("btn-back-purchase").disabled = isOff;
   }
@@ -638,20 +633,17 @@
         qs("#list-form .missing").classList.remove("hidden");
       } else {
         setSellBtnState(true);
-        setHeaderBtnState(true);
         let list = await fetch("/listings/add", {method: "POST", body: params});
         await statusCheck(list);
         qs("#list-form .success").classList.remove("hidden");
         setTimeout(function() {
           setSellView();
           setSellBtnState(false);
-          setHeaderBtnState(false);
         }, SEC);
       }
     } catch (err) {
       handleError("#list-form", err);
       setLoginBtnState(false);
-      setHeaderBtnState(false);
     }
   }
 
@@ -698,11 +690,6 @@
     qs("#sell-view .log-in-warning").classList.add("hidden");
     qs("#sell-view .incorrect").classList.add("hidden");
     id("btn-expand-list").classList.add("hidden");
-  }
-
-  /** Toggles expansion of list of items in the sell view. */
-  function toggleExpandList() {
-    id("listed-item-display").classList.toggle("hide-items");
   }
 
   /** Populates items in buy view from search query and filters if applied. */

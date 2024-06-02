@@ -458,7 +458,7 @@ async function insertListingStock(db, item) {
 /**
  * Inserts tranasction into the database and returns the new stock for item bought.
  * @param {sqlite3.Database} db - database
- * @param {String} newID - tranasction confirmation code 
+ * @param {String} newID - tranasction confirmation code
  * @param {Number} listingID - listing ID for item bought
  * @param {String} sellerUser - seller of item
  * @param {String} buyerUser - buyer of item
@@ -478,7 +478,7 @@ async function insertTransaction(db, newID, listingID, sellerUser, buyerUser, co
 
 /**
  * Generates unique transaction confirmation code with length defined by class constant above.
- * @param {sqlite3.Database} db - database 
+ * @param {sqlite3.Database} db - database
  * @returns {String} - unique confirmation code
  */
 async function genUniqueCode(db) {
