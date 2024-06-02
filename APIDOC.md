@@ -210,7 +210,7 @@ Item # 5 listed.
 ## Create New Transaction
 **Endpoint:** `/transactions/add`
 
-**Description:** Creates a new transaction associated to the given listing, seller, and buyer. Returns the updated stock amount for the bought item. A user must be logged in to use this endpoint.
+**Description:** Creates a new transaction associated to the given listing, seller, and buyer. Returns the updated stock amount for the bought item and the unique confirmation code. A user must be logged in to use this endpoint.
 
 **Request Type:** `POST`
 
@@ -229,13 +229,13 @@ Item # 5 listed.
 **Example Response:**
 
 ```
-5
+5 T2349D
 ```
 
 **Error Handling:**
 
 `500` error: "Something went wrong on the server. Please try again later."
-- Occurs when reading/writing to database fails
+- Occurs when reading/writing to database fails or code generations fails
 
 `400` error: "Missing required parameters."
 - Occurs when request is missing one of the four parameters
@@ -320,7 +320,7 @@ Logout successful.
 ## Create New User
 **Endpoint:** `/register`
 
-**Description:** Registers an account to the store with given username and password.
+**Description:** Registers an account to the store with given username, email, and password.
 
 **Request Type:** `POST`
 
@@ -330,6 +330,7 @@ Logout successful.
 |Param|Description|
 |:---|:---|
 | username | String (*required*) <br> Username for user's new account |
+| email | String (*required*) <br> Email for user's new account |
 | password | String (*required*) <br> Password of new account |
 
 **Example Request:**
@@ -352,3 +353,6 @@ Account created.
 
 `400` error: "Username is taken."
 - Occurs when given username already has an account
+
+`400` error: "Email is already registered with an account."
+- Occurs when given email already has an account

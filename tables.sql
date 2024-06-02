@@ -1,5 +1,6 @@
 CREATE TABLE users (
 	username TEXT,
+	email TEXT,
 	password TEXT,
 	PRIMARY KEY(username)
 );
@@ -22,13 +23,13 @@ CREATE TABLE stocks (
 );
 
 CREATE TABLE transactions (
-	id INTEGER,
+	id TEXT,
 	listingID INTEGER REFERENCES listings,
 	sellerUser TEXT REFERENCES users,
 	buyerUser TEXT REFERENCES users,
 	cost REAL,
 	date DATETIME DEFAULT (datetime('now','localtime')),
-	PRIMARY KEY(id AUTOINCREMENT)
+	PRIMARY KEY(id)
 );
 
 CREATE TABLE categories (
