@@ -59,7 +59,9 @@
   /** Initializes functionality for buttons in the sell view. */
   function initSellViewBtns() {
     id("btn-sell").addEventListener("click", setSellView);
-    id("btn-expand-list").addEventListener("click", toggleExpandList);
+    id("btn-expand-list").addEventListener("click", () => {
+      id("listed-item-display").classList.toggle("hide-items");
+    });
     id("btn-create-listing").addEventListener("click", toggleListingForm);
     id("btn-cancel-list").addEventListener("click", toggleListingForm);
     id("btn-list").addEventListener("click", (evt) => {
@@ -87,6 +89,9 @@
     id("to-create-acc-form").addEventListener("click", toggleLoginCreateAcc);
     id("btn-view-profile").addEventListener("click", setProfileView);
     id("btn-logout").addEventListener("click", userLogout);
+    id("btn-expand-transactions").addEventListener("click", () => {
+      id("transaction-display").classList.toggle("hide-items");
+    });
   }
 
   /** Hides all views and resets all forms and warning messages. */
@@ -441,9 +446,10 @@
       params.append("cost", item.price);
       let buy = await fetch("/transactions/add", {method: "POST", body: params});
       await statusCheck(buy);
-      let stock = await buy.text();
+      let response = (await buy.text()).split(" ");
       qs("#purchase-view .success").classList.remove("hidden");
-      qs("#product-view .item-stock").textContent = "(" + stock + " available)";
+      qs("#purchase-view .success").textContent = "Order #" + response[1] + " confirmed.";
+      qs("#product-view .item-stock").textContent = "(" + response[0] + " available)";
 
       setTimeout(function() {
         backToProductView();
@@ -461,6 +467,7 @@
   function clearBuyMessages() {
     qs("#purchase-view .incorrect").classList.add("hidden");
     qs("#purchase-view .success").classList.add("hidden");
+    qs("#purchase-view .success").textContent = "";
   }
 
   /** Clears login success/failure messages which appear after attempting a login. */
@@ -520,7 +527,8 @@
     try {
       clearRegisterMessages();
       let params = new FormData(qs("#create-account-form > form"));
-      if (!params.get("username") || !params.get("password") || !params.get("confirm-password")) {
+      if (!params.get("username") || !params.get("email") || !params.get("password") ||
+        (!params.get("confirm-password"))) {
         qs("#create-account-form .missing").classList.remove("hidden");
       } else if (params.get("password") !== params.get("confirm-password")) {
         qsa("#create-account-form .incorrect")[0].classList.remove("hidden");

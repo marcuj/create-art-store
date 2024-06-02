@@ -40,18 +40,20 @@ footer {
   margin-bottom: 20px;
   box-shadow: #00000034 0px 0px 10px;
   background-color: #ffffff;
+  overflow: auto;
 }
 
 #login-view, #buy-view, #product-view, #sell-view, #purchase-view, #profile-view {
   margin: 20px;
 }
 
-#filter-view, #right-column {
-  width: 10%;
+#filter-view {
+  flex: 0 0 10%;
 }
 
 #right-column {
   padding: 20px;
+  flex: 0 1 10%;
 }
 
 #login-view {
@@ -59,7 +61,7 @@ footer {
 }
 
 #buy-view, #product-view {
-  width: 60%;
+  flex: 0 0 60%;
 }
 
 #sell-view {
@@ -207,6 +209,10 @@ img,
   flex-direction: row;
   align-items: center;
   height: 30px;
+}
+
+#price-setting > div {
+  text-wrap: nowrap;
 }
 
 .applied-filter {
@@ -388,17 +394,16 @@ button:hover {
 
 .item-info {
   margin-top: 10px;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }
 
-#item-display .item-info {
+.row .item-info, .tile .item-info {
   margin: 10px;
-  margin-bottom: 18px;
 }
 
 .row .item-info {
-  width: calc(60% - 250.4px);
+  width: 60%;
+  margin-bottom: 18px;
+  overflow: auto;
 }
 
 .tile .item-info {
@@ -407,6 +412,7 @@ button:hover {
 
 #listed-item-display .item-info, #transaction-display .item-info {
   width: calc(100% - 185px);
+  overflow: auto;
 }
 
 #product-view .item-info {
@@ -492,7 +498,7 @@ header h1,
   justify-content: center;
 }
 
-.swap-login > button, #btn-expand-list, #btn-clear-filter {
+.swap-login > button, #btn-expand-list, #btn-expand-transactions, #btn-clear-filter {
   color: #00000091;
 }
 

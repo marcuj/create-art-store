@@ -37,6 +37,7 @@ const USER_ERROR = 400;
 const API_ERROR = 500;
 const OK = 200;
 const PORT_NUM = 8000;
+const CODE_LEN = 5;
 
 /*
  * Gets item listings according to (if they exist in the query) search query,
@@ -251,17 +252,22 @@ app.post("/register", async (req, res) => {
   try {
     res.type("text");
     let username = req.body.username;
+    let email = req.body.email;
     let password = req.body.password;
 
-    if (!username || !password) {
+    if (!username || !password || !email) {
       res.status(USER_ERROR).send("Missing required parameters.");
     } else {
       let db = await getDBConnection();
       let userExists = await valueExists(db, "users", "username", username);
+      let emailExists = await valueExists(db, "users", "email", email);
 
       if (userExists) {
         await db.close();
         res.status(USER_ERROR).send("Username is taken.");
+      } else if (emailExists) {
+        await db.close();
+        res.status(USER_ERROR).send("Email is already registered with an account.");
       } else {
         let sqlInsert = "INSERT INTO users VALUES(?, ?)";
         await db.run(sqlInsert, [username, password]);
@@ -313,7 +319,9 @@ async function getTransactionResponse(listID, sellerUser, buyerUser, cost) {
   } else if (existCheck[0].stock === 0) {
     response = [USER_ERROR, "Item out of stock."];
   } else {
-    response = [OK, (await insertTransaction(db, listID, sellerUser, buyerUser, cost)) + ""];
+    let newID = await genUniqueCode(db);
+    let stock = await insertTransaction(db, newID, listID, sellerUser, buyerUser, cost);
+    response = [OK, stock + " " + newID];
   }
   await db.close();
   return response;
@@ -366,8 +374,8 @@ function createListingSQL(search, upperPrice, lowerPrice, category, username, id
   let sql = "SELECT * FROM listings, stocks WHERE listings.id = stocks.id AND";
   let placeholders = [];
   if (search) {
-    placeholders.push("%" + search + "%");
-    sql += " title LIKE ? AND";
+    placeholders.push("%" + search + "%", "%" + search + "%");
+    sql += " (title LIKE ? or category LIKE ?) AND";
   }
   if (upperPrice) {
     placeholders.push(upperPrice);
@@ -424,7 +432,7 @@ async function execTransactionSQL(db, listingID, sellerUser, buyerUser, id) {
   }
   let ind = sql.lastIndexOf(" ");
   sql = sql.substring(0, ind);
-  sql += " ORDER BY id DESC";
+  sql += " ORDER BY DATETIME(date) DESC";
   let items = await db.all(sql, placeholders);
   await db.close();
   return items;
@@ -450,21 +458,51 @@ async function insertListingStock(db, item) {
 /**
  * Inserts tranasction into the database and returns the new stock for item bought.
  * @param {sqlite3.Database} db - database
+ * @param {String} newID - tranasction confirmation code 
  * @param {Number} listingID - listing ID for item bought
  * @param {String} sellerUser - seller of item
  * @param {String} buyerUser - buyer of item
  * @param {Number} cost - cost of item
  * @returns {Number} - new item stock amount
  */
-async function insertTransaction(db, listingID, sellerUser, buyerUser, cost) {
-  let sqlInsert = "INSERT INTO transactions(listingID, sellerUser, buyerUser, cost) " +
-    "VALUES(?, ?, ?, ?)";
-  await db.run(sqlInsert, [listingID, sellerUser, buyerUser, cost]);
+async function insertTransaction(db, newID, listingID, sellerUser, buyerUser, cost) {
+  let sqlInsert = "INSERT INTO transactions(id, listingID, sellerUser, buyerUser, cost) " +
+    "VALUES(?, ?, ?, ?, ?)";
+  await db.run(sqlInsert, [newID, listingID, sellerUser, buyerUser, cost]);
   let sqlLowerStock = "UPDATE stocks SET stock = stock - 1 WHERE id = ?";
   await db.run(sqlLowerStock, [listingID]);
   let sqlGetStock = "SELECT stock FROM stocks WHERE id = ?";
   let stock = await db.get(sqlGetStock, [listingID]);
   return stock.stock;
+}
+
+/**
+ * Generates unique transaction confirmation code with length defined by class constant above.
+ * @param {sqlite3.Database} db - database 
+ * @returns {String} - unique confirmation code
+ */
+async function genUniqueCode(db) {
+  let code;
+  let notUnique = true;
+  while (notUnique) {
+    code = genConfirmationCode();
+    notUnique = await valueExists(db, "transactions", "id", code);
+  }
+  return code;
+}
+
+/**
+ * Generates transaction confirmation code with length defined by class constant above.
+ * Idea from https://sentry.io/answers/generate-random-string-characters-in-javascript/
+ * @returns {String} - confirmation code
+ */
+function genConfirmationCode() {
+  let options = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let code = "T";
+  for (let i = 0; i < CODE_LEN; i++) {
+    code += options.charAt(Math.floor(Math.random() * CODE_LEN));
+  }
+  return code;
 }
 
 /**
