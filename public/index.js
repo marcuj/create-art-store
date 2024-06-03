@@ -525,6 +525,8 @@
       if (!params.get("username") || !params.get("email") || !params.get("password") ||
         (!params.get("confirm-password"))) {
         qs("#create-account-form .missing").classList.remove("hidden");
+      } else if (!emailValidate(params.get("email"))) {
+        qsa("#create-account-form .incorrect")[2].classList.remove("hidden");
       } else if (params.get("password") !== params.get("confirm-password")) {
         qsa("#create-account-form .incorrect")[0].classList.remove("hidden");
       } else {
@@ -533,12 +535,6 @@
         await statusCheck(register);
         qs("#create-account-form .success").classList.remove("hidden");
 
-        let user = params.get("username");
-        let pw = params.get("password");
-
-        let loginParams = new FormData();
-        loginParams.append("username", user);
-        loginParams.append("password", pw);
         let login = await fetch("/login", {method: "POST", body: params});
         await statusCheck(login);
         await activateLogin(params.get("username"));
@@ -548,6 +544,12 @@
       qsa("#create-account-form .incorrect")[1].textContent = err;
       setLoginBtnState(false);
     }
+  }
+
+  function emailValidate(email) {
+    let at = email.indexOf("@");
+    let dot = email.indexOf(".");
+    return at < dot;
   }
 
   /**
