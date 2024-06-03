@@ -546,6 +546,11 @@
     }
   }
 
+  /**
+   * Validates given email by checking if "@" comes before "."
+   * @param {String} email 
+   * @returns {Boolean} true if valid email, false otherwise
+   */
   function emailValidate(email) {
     let at = email.indexOf("@");
     let dot = email.indexOf(".");
