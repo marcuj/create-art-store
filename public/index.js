@@ -548,7 +548,7 @@
 
   /**
    * Validates given email by checking if "@" comes before "."
-   * @param {String} email 
+   * @param {String} email - user email
    * @returns {Boolean} true if valid email, false otherwise
    */
   function emailValidate(email) {
