@@ -48,12 +48,12 @@ footer {
 }
 
 #filter-view {
-  flex: 0 0 10%;
+  flex: 0 0 14%;
 }
 
 #right-column {
   padding: 20px;
-  flex: 0 1 10%;
+  flex: 0 1 14%;
 }
 
 #login-view {
@@ -61,7 +61,7 @@ footer {
 }
 
 #buy-view, #product-view {
-  flex: 0 0 60%;
+  flex: 0 0 53%;
 }
 
 #sell-view {
