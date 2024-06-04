@@ -269,13 +269,14 @@ app.post("/register", async (req, res) => {
         await db.close();
         res.status(USER_ERROR).send("Email is already registered with an account.");
       } else {
-        let sqlInsert = "INSERT INTO users VALUES(?, ?)";
+        let sqlInsert = "INSERT INTO users(username, password) VALUES(?, ?)";
         await db.run(sqlInsert, [username, password]);
         await db.close();
         res.send("Account created.");
       }
     }
   } catch (err) {
+    console.log(err);
     res.type("text").status(API_ERROR)
       .send("Something went wrong on the server. Please try again later.");
   }
