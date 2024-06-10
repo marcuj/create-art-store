@@ -1,5 +1,5 @@
 # Create - Ecommerce Art Website
-An ecommerce website for buying and selling art. (This was created for the final project for CSE 154.)
+An ecommerce website for buying and selling art.
 
 ## Features
 
@@ -11,7 +11,7 @@ An ecommerce website for buying and selling art. (This was created for the final
 
 ## How it works
 
-Uses AJAX in [`index.js`](public/app.js) to fetch the store information from an Express app `app.js`. The Express app defines an API that uses `sqlite3` to communicate with a database `create.db` (see `APIDOC.md` for more information). The SQL file `tables.sql` shows the create table functions used to make the `sqlite` database. The database stores information on user logins, item listings (and their stock), transactions, and item categories. The database is already filled with example items to showcase functionality of the site. 
+Uses AJAX in [`index.js`](public/index.js) to fetch the store information from an Express app [`app.js`](app.js). The Express app defines an API that uses `sqlite3` to communicate with a database [`create.db`](create.db) (see [`APIDOC.md`](APIDOC.md) for more information). The SQL file [`tables.sql`](tables.sql) shows the create table functions used to make the `sqlite` database. The database stores information on user logins, item listings (and their stock), transactions, and item categories. The database is already filled with example items to showcase functionality of the site. 
 
 Uses cookies to remember previous login and stores previous username to autofill when logging in. Currently designed to only handle a single login at a time. 
 
