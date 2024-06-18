@@ -1,4 +1,4 @@
-# Create - Ecommerce Art Website ([demo](https://create-art-store.web.app/))
+# Create - Ecommerce Art Website ([demo](https://create-art-store.firebaseapp.com/))
 An ecommerce website for buying and selling art.
 
 Visit [here](https://create-art-store.web.app/) for a demo. Or, download and run `nodemon` in the directory to get the full version which is set to deploy to `localhost:8000`.
